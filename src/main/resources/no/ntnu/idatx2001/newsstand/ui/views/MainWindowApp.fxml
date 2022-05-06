@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane minHeight="775.0" minWidth="1200.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.ntnu.idatx2001.newsstand.ui.controllers.MainWindowAppController">
+    <top>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <MenuBar>
+                    <menus>
+                        <Menu mnemonicParsing="false" text="File">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#open" text="Import" />
+                                <MenuItem mnemonicParsing="false" onAction="#export" text="Export" />
+                                <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem mnemonicParsing="false" onAction="#exitApplicationdoExitApplication" text="Save and Exit" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Edit" />
+
+                        <Menu mnemonicParsing="false" text="Help">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#showAboutDialog" text="About" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Admin">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#showLogInDialog" text="Log In" />
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+            </children>
+        </VBox>
+    </top>
+    <bottom>
+        <VBox>
+            <children>
+                <HBox alignment="CENTER" spacing="10.0">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#addArmyUnitArmyOne" text="New Unit in Army One" />
+                        <Button mnemonicParsing="false" onAction="#deleteArmyUnit" text="Delete" />
+                        <Button mnemonicParsing="false" onAction="#simulate" text="Simulate" />
+                        <Button mnemonicParsing="false" text="Restart" onAction="#restart"/>
+                        <Button mnemonicParsing="false" onAction="#editUnit" text="Edit" />
+                        <Button mnemonicParsing="false" onAction="#addArmyUnitArmyTwo" text="New Unit in Army Two" />
+                    </children>
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                    </padding>
+                </HBox>
+            </children>
+        </VBox>
+    </bottom>
+   <left>
+        <TableView fx:id="armyOneTableView" onMouseClicked="#selectedArmyOne" prefHeight="294.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn fx:id="nameColumnArmyOne" prefWidth="75.0" text="Name" />
+                <TableColumn fx:id="healthColumnArmyOne" prefWidth="75.0" text="Health" />
+            </columns>
+        </TableView>
+   </left>
+   <right>
+      <TableView fx:id="armyTwoTableView" onMouseClicked="#selectedArmyTwo" prefHeight="294.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+        <columns>
+            <TableColumn fx:id="nameColumnArmyTwo" prefWidth="75.0" text="Name" />
+            <TableColumn fx:id="healthColumnArmyTwo" prefWidth="75.0" text="Health" />
+        </columns>
+      </TableView>
+   </right>
+   <center>
+        <VBox alignment="TOP_CENTER">
+            <TextField fx:id="winner" alignment="CENTER" prefWidth="150.0" text="No Winner Yet" />
+            <ChoiceBox fx:id="terrainChoice" accessibleText="Terrain" prefWidth="150.0">
+            </ChoiceBox>
+
+        </VBox>
+   </center>
+</BorderPane>
