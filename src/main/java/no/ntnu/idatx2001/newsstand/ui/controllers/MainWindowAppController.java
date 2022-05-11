@@ -46,8 +46,6 @@ import java.util.logging.Logger;
  */
 public class MainWindowAppController implements Initializable {
 
-  private Army armyOne;
-  private Army armyTwo;
   private Battle battle;
   private ObservableList<Unit> observableArmyOne;
   private ObservableList<Unit> observableArmyTwo;
@@ -81,26 +79,21 @@ public class MainWindowAppController implements Initializable {
   public void initialize(URL url, ResourceBundle resourceBundle) {
     // Create the business logic by creating an instance of
     // LiteratureRegister and filling it with dummy data.
-    this.armyOne = new Army("ArmyOne");
-    this.armyTwo = new Army("ArmyTwo");
-
+    winner.setEditable(false);
+    Army armyOne = new Army("ArmyOne");
+    Army armyTwo = new Army("ArmyTwo");
     String forest = "Forest";
     String plains = "Plains";
     String hill = "Hills";
     terrainChoice.getItems().addAll(forest, plains, hill);
-    SaveToFileRefactored saveToFileRefactored = new SaveToFileRefactored();
+    terrainChoice.setValue("Terrain");
     try {
-      this.armyOne = saveToFileRefactored.retrieveArmy("ArmyOne.csv");
+      FileController fileController = new FileController();
+      this.battle = fileController.retriveBattle();
     } catch (IOException e) {
-      e.printStackTrace();
+      this.battle = new Battle(armyOne, armyTwo);
     }
 
-    try {
-      this.armyTwo = saveToFileRefactored.retrieveArmy("ArmyTwo.csv");
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    this.battle = new Battle(armyOne, armyTwo);
 
     // Finalize the setup of the TableView
     nameColumnArmyOne.setMinWidth(150);
@@ -135,6 +128,38 @@ public class MainWindowAppController implements Initializable {
     this.observableArmyTwo =
             FXCollections.observableArrayList(this.battle.getArmyTwo().getAllUnits());
     this.armyTwoTableView.setItems(this.observableArmyTwo);
+  }
+
+  //todo: how to make this work
+  public void makeTable() {
+    boolean isArmyOne = true;
+
+    TableColumn<Unit, String> nameColumn = this.nameColumnArmyOne;
+    TableColumn<Unit, String> healthColumn = healthColumnArmyOne;
+    TableView<Unit> c = this.armyOneTableView;
+    ObservableList<Unit> d = this.observableArmyOne;
+    Army e = battle.getArmyOne();
+    if (!isArmyOne) {
+      nameColumnArmyOne = nameColumnArmyTwo;
+      healthColumn = healthColumnArmyTwo;
+      c = this.armyTwoTableView;
+      d = this.observableArmyTwo;
+      e = battle.getArmyTwo();
+    }
+
+    nameColumn.setMinWidth(150);
+    nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+    healthColumn.setMinWidth(150);
+    healthColumn.setCellValueFactory(new PropertyValueFactory<>("health"));
+
+    c.setOnMousePressed(mouseEvent -> {
+      if (mouseEvent.isPrimaryButtonDown() && (mouseEvent.getClickCount() == 2)) {
+        this.showUnitDetails(null);
+      }
+    });
+
+    d = FXCollections.observableArrayList(e.getAllUnits());
+    c.setItems(d);
   }
 
   /**
@@ -209,21 +234,21 @@ public class MainWindowAppController implements Initializable {
     winner.setText(this.battle.simulate().getName());
     String terrainType = terrainChoice.getSelectionModel().getSelectedItem();
     switch (terrainType) {
-      case "Hill" -> {
-        for(Unit rangeUnit: battle.getArmyOne().getRangedUnits()){
-          rangeUnit.setAttackBonus(rangeUnit.getAttackBonus() + 5);
+      case "Hills" -> {
+        for(Unit rangedUnit: battle.getArmyOne().getRangedUnits()){
+          rangedUnit.setAttackBonus(rangedUnit.getAttackBonus() + 2);
 
         }for(Unit rangeUnit: battle.getArmyTwo().getRangedUnits()){
-          rangeUnit.setAttackBonus(rangeUnit.getAttackBonus() + 5);
+          rangeUnit.setAttackBonus(rangeUnit.getAttackBonus() + 2);
         }
       }
 
       case "Plains" -> {
         for(Unit cavalryUnit: battle.getArmyOne().getCavalryUnits()){
-          cavalryUnit.setAttackBonus(cavalryUnit.getAttackBonus() + 5);
+          cavalryUnit.setAttackBonus(cavalryUnit.getAttackBonus() + 3);
         }
         for(Unit cavalryUnit: battle.getArmyTwo().getCavalryUnits()){
-          cavalryUnit.setAttackBonus(cavalryUnit.getAttackBonus() + 5);
+          cavalryUnit.setAttackBonus(cavalryUnit.getAttackBonus() + 3);
         }
       }
 
@@ -234,8 +259,8 @@ public class MainWindowAppController implements Initializable {
         for(Unit cavalryUnit: battle.getArmyTwo().getCavalryUnits()){
           cavalryUnit.setAttackBonus(0);
         }
-        for(Unit rangeUnit: battle.getArmyOne().getRangedUnits()){
-          rangeUnit.setAttackBonus(rangeUnit.getAttackBonus() + 2);
+        for(Unit rangedUnit: battle.getArmyOne().getRangedUnits()){
+          rangedUnit.setAttackBonus(rangedUnit.getAttackBonus() + 2);
         }
         for(Unit rangeUnit: battle.getArmyTwo().getRangedUnits()){
           rangeUnit.setAttackBonus(rangeUnit.getAttackBonus() + 2);
@@ -262,30 +287,7 @@ public class MainWindowAppController implements Initializable {
    */
   @FXML
   public void editUnit(ActionEvent actionEvent) {
-    Unit selectedUnitArmyOne =
-            this.armyOneTableView.getSelectionModel().getSelectedItem();
-
-    Unit selectedUnitArmyTwo =
-            this.armyTwoTableView.getSelectionModel().getSelectedItem();
-    
-    if (selectedUnitArmyOne == null && selectedUnitArmyTwo == null) {
-      showPleaseSelectItemDialog();
-    } else {
-      if (selectedUnitArmyOne instanceof Unit) {
-        Unit selectedUnit = selectedUnitArmyOne;
-        UnitDetailsDialog npDialog = new UnitDetailsDialog(selectedUnit, true);
-        npDialog.showAndWait();
-
-        this.updateObservableArmyOne();
-      }
-      if (selectedUnitArmyTwo instanceof Unit) {
-        Unit selectedUnit = selectedUnitArmyTwo;
-        UnitDetailsDialog npDialog = new UnitDetailsDialog(selectedUnit, true);
-        npDialog.showAndWait();
-
-        this.updateObservableArmyTwo();
-      }
-    }
+    unitDialog(true);
   }
 
   /**
@@ -295,6 +297,10 @@ public class MainWindowAppController implements Initializable {
    */
   @FXML
   public void showUnitDetails(ActionEvent actionEvent) {
+    unitDialog(false);
+  }
+
+  public void unitDialog(boolean editable){
     Unit selectedArmyOne =
             this.armyOneTableView.getSelectionModel().getSelectedItem();
 
@@ -304,19 +310,18 @@ public class MainWindowAppController implements Initializable {
     if (selectedArmyOne == null && selectedUnitArmyTwo == null) {
       showPleaseSelectItemDialog();
     } else {
-
-      if (selectedArmyOne instanceof Unit) {
-        Unit selectedUnit = selectedArmyOne;
-        UnitDetailsDialog npDialog = new UnitDetailsDialog(selectedUnit, false);
-        npDialog.showAndWait();
+      Unit selectedUnit = null;
+      if (selectedArmyOne != null) {
+        selectedUnit = selectedArmyOne;
       }
-
-      if (selectedUnitArmyTwo instanceof Unit) {
-        Unit selectedUnit = selectedUnitArmyTwo;
-        UnitDetailsDialog npDialog = new UnitDetailsDialog(selectedUnit, false);
-        npDialog.showAndWait();
+      if (selectedUnitArmyTwo != null) {
+        selectedUnit = selectedUnitArmyTwo;
       }
+      UnitDetailsDialog npDialog = new UnitDetailsDialog(selectedUnit, editable);
+      npDialog.showAndWait();
     }
+    updateObservableArmyOne();
+    updateObservableArmyTwo();
   }
 
   //TODO: make this the terrainChooser.
@@ -324,47 +329,44 @@ public class MainWindowAppController implements Initializable {
    * Displays a confirmation dialog with custom actions.
    */
   @FXML
-  public void chooseUnitType(ActionEvent actionEvent) {
-    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-    alert.setTitle("Choose unit type");
-    alert.setHeaderText("Choose the unit type");
-    alert.setContentText("unit type:");
+  public void chooseUnitType(ActionEvent actionEvent) throws IOException {
+    if(terrainChoice.getSelectionModel().isEmpty()) {
+      Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+      alert.setTitle("Choose terrain type");
+      alert.setHeaderText("Choose the terrain type, this can be changed in the <Terrain> dropdown menu");
+      alert.setContentText("terrain type:");
 
-    ButtonType buttonTypeOne = new ButtonType("Cavalry Unit");
-    ButtonType buttonTypeTwo = new ButtonType("Commander Unit");
-    ButtonType buttonTypeThree = new ButtonType("Infantry Unit");
-    ButtonType buttonTypeFour = new ButtonType("Ranged Unit");
-    ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+      ButtonType buttonTypeOne = new ButtonType("Forest");
+      ButtonType buttonTypeTwo = new ButtonType("Plains");
+      ButtonType buttonTypeThree = new ButtonType("Hills");
+      ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-    alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);
+      alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);
 
-    Optional<ButtonType> result = alert.showAndWait();
+      Optional<ButtonType> result = alert.showAndWait();
 
-    if (result.isPresent()) {
-      if (result.get() == buttonTypeOne) {
-        // ... user chose "One"
-        logger.log(Level.INFO, "User chose ONE..");
-      } else if (result.get() == buttonTypeTwo) {
-        // ... user chose "Two"
-        logger.log(Level.INFO, "User chose TWO..");
-      } else if (result.get() == buttonTypeThree) {
-        // ... user chose "Three"
-        logger.log(Level.INFO, "User chose THREE..");
-      } else if (result.get() == buttonTypeFour) {
-        // ... user chose "Three"
-        logger.log(Level.INFO, "User chose Four..");
-      } else {
-        // ... user chose CANCEL or closed the dialog
-        logger.log(Level.INFO, "User chose CANCEL or closed the dialog..");
+      if (result.isPresent()) {
+        if (result.get() == buttonTypeOne) {
+          terrainChoice.getSelectionModel().select(0);
+        } else if (result.get() == buttonTypeTwo) {
+          terrainChoice.getSelectionModel().select(1);
+        } else if (result.get() == buttonTypeThree) {
+          terrainChoice.getSelectionModel().select(2);
+          logger.log(Level.INFO, "User chose THREE..");
+        } else {
+          // ... user chose CANCEL or closed the dialog
+          logger.log(Level.INFO, "User chose CANCEL or closed the dialog..");
+        }
       }
     }
+    simulate(actionEvent);
   }
 
   /**
    * Exit the application. Displays a confirmation dialog.
    */
   @FXML
-  public void exitApplicationdoExitApplication(ActionEvent actionEvent) {
+  public void exitApplicationdoExitApplication(ActionEvent actionEvent) throws IOException {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     alert.setTitle("Confirmation Dialog");
     alert.setHeaderText("Exit Application ?");
@@ -374,9 +376,8 @@ public class MainWindowAppController implements Initializable {
 
     if (result.isPresent()) {
       if (result.get() == ButtonType.OK) {
-        SaveToFileRefactored saveToFileRefactored = new SaveToFileRefactored();
-        saveToFileRefactored.saveArmy(battle.getArmyOne(),0,"ArmyOne.csv");
-        saveToFileRefactored.saveArmy(battle.getArmyTwo(),1,"ArmyTwo.csv");
+        FileController fileController = new FileController();
+        fileController.saveBattle(battle);
         Platform.exit();
       } else {
         // ... user chose CANCEL or closed the dialog
@@ -393,80 +394,18 @@ public class MainWindowAppController implements Initializable {
   public void showAboutDialog(ActionEvent actionEvent) {
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle("Information Dialog - About");
-    alert.setHeaderText("Literature Register");
-    alert.setContentText("A brilliant application created by\n"
-        + "(C)Johannes Valøy\n"
-        + "v0.1 2016-04-21");
+    alert.setHeaderText("Wargames");
+    alert.setContentText("An application created by\n" + "(C)Johannes Valøy\n" + "v1.0 2022-05-07");
 
     alert.showAndWait();
   }
 
-  /**
-   * Displays a login dialog using a custom dialog.
-   */
-  @FXML
-  public void showLogInDialog(ActionEvent actionEvent) {
-    // Create the custom dialog.
-    Dialog<Pair<String, String>> dialog = new Dialog<>();
-    dialog.setTitle("Login Dialog");
-    dialog.setHeaderText("Look, a Custom Login Dialog");
-
-    // Set the button types.
-    ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
-    dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
-
-    // Create the username and password labels and fields.
-    GridPane grid = new GridPane();
-    grid.setHgap(10);
-    grid.setVgap(10);
-    grid.setPadding(new Insets(20, 150, 10, 10));
-
-    TextField username = new TextField();
-    username.setPromptText("Username");
-
-    PasswordField password = new PasswordField();
-    password.setPromptText("Password");
-
-    grid.add(new Label("Username:"), 0, 0);
-    grid.add(username, 1, 0);
-    grid.add(new Label("Password:"), 0, 1);
-    grid.add(password, 1, 1);
-
-    // Enable/Disable login button depending on whether a username was entered.
-    Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
-    loginButton.setDisable(true);
-
-    // Do some validation .
-    username.textProperty().addListener((observable, oldValue, newValue) ->
-        loginButton.setDisable(newValue.trim().isEmpty()));
-
-    dialog.getDialogPane().setContent(grid);
-
-    // Request focus on the username field by default.
-    Platform.runLater(username::requestFocus);
-
-    // Convert the result to a username-password-pair when the login button is clicked.
-    dialog.setResultConverter(
-        dialogButton -> {
-          if (dialogButton == loginButtonType) {
-            return new Pair<>(username.getText(), password.getText());
-          }
-          return null;
-        });
-
-    Optional<Pair<String, String>> result = dialog.showAndWait();
-
-    result.ifPresent(
-        usernamePassword -> logger.info("Username=" + usernamePassword.getKey()
-            + " Password=" + usernamePassword.getValue()));
-  }
 
   @FXML
   public void export(ActionEvent actionEvent){
     DirectoryChooser directoryChooser = new DirectoryChooser();
     directoryChooser.setTitle("Open Resource File Army One");
     File selectedFolder = directoryChooser.showDialog(null);
-    System.out.println(selectedFolder.getAbsolutePath());
     SaveToFileRefactored saveToFileRefactored = new SaveToFileRefactored();
     saveToFileRefactored.saveArmy(battle.getArmyOne(), 0, selectedFolder.getAbsolutePath() + "\\ArmyOne.csv");
     saveToFileRefactored.saveArmy(battle.getArmyTwo(), 0, selectedFolder.getAbsolutePath() + "\\ArmyTwo.csv");
@@ -479,32 +418,22 @@ public class MainWindowAppController implements Initializable {
    */
   @FXML
   public void open(ActionEvent actionEvent) throws IOException {
-    FileChooser fileChooserArmyOne = new FileChooser();
-    fileChooserArmyOne.setTitle("Open Resource File Army One");
-    fileChooserArmyOne.getExtensionFilters().addAll(
-        new FileChooser.ExtensionFilter("Text Files", "*.csv"));
-    File selectedFileArmyOne = fileChooserArmyOne.showOpenDialog(null);
+    File fileArmyOne = openDialog();
+    File fileArmyTwo = openDialog();
+    SaveToFileRefactored saveToFileRefactored = new SaveToFileRefactored();
+    this.battle = new Battle(
+            saveToFileRefactored.retrieveArmy(fileArmyOne.getAbsolutePath()),
+            saveToFileRefactored.retrieveArmy(fileArmyTwo.getAbsolutePath()));
+    this.updateObservableArmyOne();
+    this.updateObservableArmyTwo();
+  }
 
+  public File openDialog(){
     FileChooser fileChooserArmyTwo = new FileChooser();
     fileChooserArmyTwo.setTitle("Open Resource File Army Two");
     fileChooserArmyTwo.getExtensionFilters().addAll(
             new FileChooser.ExtensionFilter("Text Files", "*.csv"));
-    File selectedFileArmyTwo = fileChooserArmyTwo.showOpenDialog(null);
-
-    SaveToFileRefactored saveToFileRefactored = new SaveToFileRefactored();
-    this.battle = new Battle(
-            saveToFileRefactored.retrieveArmy(selectedFileArmyOne.getAbsolutePath()),
-            saveToFileRefactored.retrieveArmy(selectedFileArmyTwo.getAbsolutePath()));
-
-    if (selectedFileArmyOne != null) {
-      logger.log(Level.INFO, selectedFileArmyOne.getAbsolutePath());
-    }
-    if (selectedFileArmyTwo != null) {
-      logger.log(Level.INFO, selectedFileArmyTwo.getAbsolutePath());
-    }
-    this.updateObservableArmyOne();
-    this.updateObservableArmyTwo();
-
+    return fileChooserArmyTwo.showOpenDialog(null);
   }
   /**
    * Updates the observable literature register by replacing the entire content
@@ -517,21 +446,6 @@ public class MainWindowAppController implements Initializable {
 
   private void updateObservableArmyTwo() {
     this.observableArmyTwo.setAll(this.battle.getArmyTwo().getAllUnits());
-  }
-
-  /**
-   * TODO: remove this dummy funtcion.
-   * Fills the register with dummy data.
-   */
-  private void fillRegisterWithDummyData() {
-    this.battle.getArmyOne().add(new CavalryUnit("Cavalry Unit One", 1, 123, 305));
-    this.battle.getArmyOne().add(new CavalryUnit("Cavalry Unit Two", 1, 204, 305));
-    this.battle.getArmyOne().add(new CavalryUnit("Cavalry Unit Three", 1, 195, 305));
-    this.battle.getArmyOne().add(new CommanderUnit("Cavalry Unit Four", 1, 12, 305));
-    this.battle.getArmyTwo().add(new CavalryUnit("Cavalry Unit Five", 1, 123, 305));
-    this.battle.getArmyTwo().add(new CavalryUnit("Cavalry Unit Six", 1, 204, 305));
-    this.battle.getArmyTwo().add(new CommanderUnit("Cavalry Unit Seven", 1, 195, 305));
-    this.battle.getArmyTwo().add(new CavalryUnit("Cavalry Unit Eight", 1, 12, 305));
   }
 
   // -----------------------------------------------------------
@@ -575,17 +489,16 @@ public class MainWindowAppController implements Initializable {
     alert.showAndWait();
   }
 
-  public void selectedArmyTwo(MouseEvent mouseEvent) {
+  public void selectedArmyTwo() {
     this.armyOneTableView.getSelectionModel().clearSelection();
   }
-  public void selectedArmyOne(MouseEvent mouseEvent) {
+  public void selectedArmyOne() {
     this.armyTwoTableView.getSelectionModel().clearSelection();
   }
 
   @FXML
   public void restart(){
       this.battle = new Battle(new Army("ArmyOne"), new Army("ArmyTwo"));
-    System.out.println(battle.getArmyTwo().hasUnits());
       updateObservableArmyOne();
       updateObservableArmyTwo();
   }

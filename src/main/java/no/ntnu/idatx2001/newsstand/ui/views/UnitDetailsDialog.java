@@ -199,7 +199,6 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
                     List<Unit> result = null;
                     if (button == ButtonType.OK) {
                         int issueNo = Integer.parseInt(this.issueNoTxt.getText());
-                        int numberOfUnits = Integer.parseInt(this.numberOfUnits.getText());
 
                         // Note how the mode of the dialog effects how to deal with the result.
                         // If we opened the dialog in EDIT-mode, the changes been made by the user in the
@@ -210,10 +209,10 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
                         // upon closing the dialog.
                         // If the mode was INFO, nothing is returned (null), since no changes have been made.
                         if (mode == Mode.NEW) {
+                            int numberOfUnits = Integer.parseInt(this.numberOfUnits.getText());
                             UnitFactory unitFactory = new UnitFactory();
                             Unit unit = null;
                             try {
-                                System.out.println(numberOfUnits);
                                 unitFactory.addUnit(issueNo, this.title.getText(), this.unitType.getSelectionModel().getSelectedItem(),numberOfUnits);
                                 result = unitFactory.retrieveUnits();
                             } catch (IOException e) {

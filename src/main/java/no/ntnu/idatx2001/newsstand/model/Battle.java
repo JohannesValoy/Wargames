@@ -1,13 +1,17 @@
 package no.ntnu.idatx2001.newsstand.model;
 
+import java.io.Serializable;
+import java.util.Random;
+
 /**
  * Responsible for simulating a battle between armyOne and ArmyTwo.
  * @author Johannes Valøy
  */
 
-public class Battle {
+public class Battle implements Serializable{
     private Army armyOne;
     private Army armyTwo;
+    private Random isArmyOneAttacker;
 
     /**
      * Creates instance of Battle
@@ -18,6 +22,8 @@ public class Battle {
     public Battle(Army armyOne, Army armyTwo) {
         this.armyOne = armyOne;
         this.armyTwo = armyTwo;
+        this.isArmyOneAttacker = new Random();
+
     }
 
     /**
@@ -30,26 +36,26 @@ public class Battle {
 
     public Army simulate() {
         Army winner;
-        Army attacker = armyOne;
-        Army defender = armyTwo;
+        Army attacker = null;
+        Army defender = null;
         while (armyOne.hasUnits() && armyTwo.hasUnits())
         {
+            if (isArmyOneAttacker.nextBoolean()) {
+                attacker = armyOne;
+                defender = armyTwo;
+            }
+            else {
+                attacker = armyTwo;
+                defender = armyOne;
+            }
 
             Unit defendingUnit = defender.getRandom();
             attacker.getRandom().attack(defendingUnit);
 
-
             if (defendingUnit.getHealth() < 1){
                 defender.remove((defendingUnit));
             }
-            if (attacker == armyOne) {
-                attacker = armyTwo;
-                defender = armyOne;
-            }
-            else {
-                attacker = armyOne;
-                defender = armyTwo;
-            }
+
 
         }
 

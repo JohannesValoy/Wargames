@@ -9,22 +9,26 @@ public class UnitFactory {
 
     public void addUnit(int health, String name, String unitType, int n) throws IOException {
         int i = 0;
+        String newName = name;
         while(i<n){
+            if(n>1){
+                newName = name + "(" + (i+1) + ")";
+            }
             switch (unitType) {
                 case "CavalryUnit" -> {
-                    CavalryUnit cavalryUnit = new CavalryUnit(name, health, 20, 12);
+                    CavalryUnit cavalryUnit = new CavalryUnit(newName, health, 20, 12);
                     units.add(cavalryUnit);
                 }
                 case "CommanderUnit" -> {
-                    CommanderUnit commanderUnit = new CommanderUnit(name, health, 25, 15);
+                    CommanderUnit commanderUnit = new CommanderUnit(newName, health, 25, 15);
                     units.add(commanderUnit);
                 }
                 case "InfantryUnit" -> {
-                    InfantryUnit infantryUnit = new InfantryUnit(name, health, 15, 10);
+                    InfantryUnit infantryUnit = new InfantryUnit(newName, health, 15, 10);
                     units.add(infantryUnit);
                 }
                 case "RangedUnit" -> {
-                    RangedUnit rangedUnit = new RangedUnit(name, health, 15, 8);
+                    RangedUnit rangedUnit = new RangedUnit(newName  , health, 15, 8);
                     units.add(rangedUnit);
                 }
                 default -> throw new IOException();

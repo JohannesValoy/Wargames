@@ -25,11 +25,6 @@
                                 <MenuItem mnemonicParsing="false" onAction="#showAboutDialog" text="About" />
                             </items>
                         </Menu>
-                        <Menu mnemonicParsing="false" text="Admin">
-                            <items>
-                                <MenuItem mnemonicParsing="false" onAction="#showLogInDialog" text="Log In" />
-                            </items>
-                        </Menu>
                     </menus>
                 </MenuBar>
             </children>
@@ -42,7 +37,7 @@
                     <children>
                         <Button mnemonicParsing="false" onAction="#addArmyUnitArmyOne" text="New Unit in Army One" />
                         <Button mnemonicParsing="false" onAction="#deleteArmyUnit" text="Delete" />
-                        <Button mnemonicParsing="false" onAction="#simulate" text="Simulate" />
+                        <Button mnemonicParsing="false" onAction="#chooseUnitType" text="Simulate" />
                         <Button mnemonicParsing="false" text="Restart" onAction="#restart"/>
                         <Button mnemonicParsing="false" onAction="#editUnit" text="Edit" />
                         <Button mnemonicParsing="false" onAction="#addArmyUnitArmyTwo" text="New Unit in Army Two" />
