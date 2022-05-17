@@ -38,9 +38,8 @@ public class RangedUnit extends Unit{
      * @return attackBonus as int
      */
     @Override
-    public int getAttackBonus() {
-            attackBonus = 3;
-        return attackBonus;
+    public int getAttackBonus() {;
+        return attackBonus + 3;
     }
 
     /**
@@ -50,10 +49,11 @@ public class RangedUnit extends Unit{
      */
     @Override
     public int getResistBonus() {
+        int resistBonus = 0;
         if(attacks == 0){
-            resistBonus = 6;
+            resistBonus = this.resistBonus + 6;
         } else {
-            resistBonus = 4;
+            resistBonus = this.resistBonus + 4;
         }
         return resistBonus;
     }

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class SaveArmyToFileTest {
 
     @Test
-    void makeFile() throws IOException {
+    void makeFile() throws Exception {
         SaveToFileRefactored savingArmy = new SaveToFileRefactored();
         Army army = new Army("Army");
         CavalryUnit unit = new CavalryUnit("Name", 1);

@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import no.ntnu.idatx2001.newsstand.ui.controllers.MainWindowAppController;
 
 /**
  * The Main window of the application. in this version we use FXML to define the
@@ -28,5 +29,13 @@ public class MainWindowApp extends Application {
 
     primaryStage.setScene(scene);
     primaryStage.show();
+    primaryStage.setOnCloseRequest(event -> {
+      MainWindowAppController mainWindowAppController = fxmlLoader.getController();
+      try {
+        mainWindowAppController.exit();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
   }
 }

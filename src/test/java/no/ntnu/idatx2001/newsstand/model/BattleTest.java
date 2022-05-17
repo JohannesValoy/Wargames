@@ -2,61 +2,52 @@ package no.ntnu.idatx2001.newsstand.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BattleTest {
 
     @Test
     void getName() {
-        Army army = new Army("ArmyOne");
-        Army army2 = new Army("ArmyTwo");
-        Battle battle = new Battle(army,army2);
-        assertEquals(army, battle.getArmyOne());
-        assertEquals(army2, battle.getArmyTwo());
-    }
-
-    /**
-     * tests simulate using 7 different type of units. Tests when armyOne wins and looses.
-     */
-
-   /* @Test
-    void simulate() {
-        CommanderUnit unit = new CommanderUnit("name", 2);
-        CommanderUnit unit2 = new CommanderUnit("name", 2);
-        CavalryUnit unit3 = new CavalryUnit("name", 2);
-        InfantryUnit unit4 = new InfantryUnit("name", 2);
-        CommanderUnit unit5 = new CommanderUnit("name", 2);
-        RangeUnit unit6 = new RangeUnit("name", 2);
-        CommanderUnit unit7 = new CommanderUnit("name", 1);
-
-
         Army armyOne = new Army("ArmyOne");
         Army armyTwo = new Army("ArmyTwo");
+        Battle battle = new Battle(armyOne,armyTwo);
+        assertEquals(armyOne, battle.getArmyOne());
+        assertEquals(armyTwo, battle.getArmyTwo());
+    }
 
-        armyOne.add(unit);
-        armyTwo.add(unit2);
-        armyTwo.add(unit3);
-        armyTwo.add(unit4);
-        armyTwo.add(unit5);
-        armyTwo.add(unit6);
-        armyTwo.add(unit7);
+    @Test
+    void getInfantryUnits() throws IOException {
+        Battle battle = new Battle(new Army("armyOne"), new Army("armyTwo"));
+        UnitFactory unitFactory = new UnitFactory();
 
-        Battle simulation = new Battle(armyOne, armyTwo);
-        assertEquals(armyTwo, simulation.simulate());
-        Army armyThree = new Army("ArmyThree");
+        unitFactory.addUnit(1, "name", "InfantryUnit",5);
+        ArrayList<Unit> infantryUnitList = new ArrayList<>(unitFactory.retrieveAllunits());
+        battle.getArmyOne().addAll(infantryUnitList);
+        assertEquals(infantryUnitList, battle.getInfantryUnits());
+    }
 
-        armyOne.add(unit);
-        armyOne.add(unit2);
-        armyOne.add(unit3);
-        armyOne.add(unit4);
-        armyThree.add(unit7);
+    @Test
+    void getCavalryUnits() throws IOException {
+        Battle battle = new Battle(new Army("armyOne"), new Army("armyTwo"));
+        UnitFactory unitFactory = new UnitFactory();
 
-        Battle OppositeSimulation = new Battle(armyOne, armyThree);
-        assertEquals(armyOne, OppositeSimulation.simulate());
+        unitFactory.addUnit(1, "name", "CavalryUnit",5);
+        ArrayList<Unit> cavalryUnitList = new ArrayList<>(unitFactory.retrieveAllunits());
+        battle.getArmyOne().addAll(cavalryUnitList);
+        assertEquals(cavalryUnitList, battle.getCavalryUnits());
+    }
 
-    }*/
+    @Test
+    void getRangedUnits() throws IOException {
+        Battle battle = new Battle(new Army("armyOne"), new Army("armyTwo"));
+        UnitFactory unitFactory = new UnitFactory();
 
-
-
-
+        unitFactory.addUnit(1, "name", "RangedUnit",5);
+        ArrayList<Unit> rangedUnitList = new ArrayList<>(unitFactory.retrieveAllunits());
+        battle.getArmyOne().addAll(rangedUnitList);
+        assertEquals(rangedUnitList, battle.getRangeUnits());
+    }
 }

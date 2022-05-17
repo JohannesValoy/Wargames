@@ -2,6 +2,7 @@ package no.ntnu.idatx2001.newsstand.model;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Keeps a collection  of units in ArrayList.
@@ -11,7 +12,7 @@ import java.util.*;
 public class Army implements Serializable {
     private String name;
     private List<Unit> units;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     /**
      * unused constructor, using name and list<Unit>.
@@ -20,7 +21,6 @@ public class Army implements Serializable {
      */
 
     public Army(String name, List<Unit> units) {
-
         this.name = name;
         this.units = new ArrayList<>(units);
     }
@@ -59,8 +59,8 @@ public class Army implements Serializable {
      * @param unit as Unit
      */
     public void add(Unit unit) {
-
         this.units.add(unit);
+
     }
 
     /**
@@ -69,7 +69,6 @@ public class Army implements Serializable {
      */
 
     public void addAll(List<Unit> units) {
-
         this.units = units;
     }
 
@@ -79,7 +78,6 @@ public class Army implements Serializable {
      */
 
     public void remove(Unit unit) {
-
         this.units.remove(unit);
     }
 
@@ -99,10 +97,6 @@ public class Army implements Serializable {
      */
     public List<Unit> getAllUnits() {
             return this.units;
-    }
-
-    public Iterator getIterator(){
-        return units.iterator();
     }
 
     /**
@@ -143,12 +137,9 @@ public class Army implements Serializable {
      * @return list of infantry units;
      */
     public List<Unit> getInfantryUnits() {
-        ArrayList<Unit> unitList = new ArrayList<>();
-        units
-                .stream()
-                .filter(unit -> unit instanceof InfantryUnit)
-                .forEach(unitList::add);
-        return unitList;
+        return units.stream()
+                .filter(InfantryUnit.class::isInstance)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -156,12 +147,9 @@ public class Army implements Serializable {
      * @return list of cavalry units;
      */
     public List<Unit> getCavalryUnits() {
-        ArrayList<Unit> unitList = new ArrayList<>();
-        units
-                .stream()
-                .filter(unit -> unit instanceof CavalryUnit)
-                .forEach(unitList::add);
-        return unitList;
+        return units.stream()
+                .filter(CavalryUnit.class::isInstance)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -169,12 +157,9 @@ public class Army implements Serializable {
      * @return list of ranged units;
      */
     public List<Unit> getRangedUnits() {
-        ArrayList<Unit> unitList = new ArrayList<>();
-        units
-                .stream()
-                .filter(unit -> unit instanceof RangedUnit)
-                .forEach(unitList::add);
-        return unitList;
+        return units.stream()
+                .filter(RangedUnit.class::isInstance)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -182,22 +167,19 @@ public class Army implements Serializable {
      * @return list of commander units;
      */
     public List<Unit> getCommanderUnits() {
-        ArrayList<Unit> unitList = new ArrayList<>();
-        units
-                .stream()
-                .filter(unit -> unit instanceof CommanderUnit)
-                .forEach(unitList::add);
-        return unitList;
+        return units.stream()
+                .filter(CommanderUnit.class::isInstance)
+                .collect(Collectors.toList());
     }
 
 
     @Override
     public String toString() {
         String armyName = getName();
-        String armyAsString = armyName + "\n";
+        StringBuilder armyAsString = new StringBuilder(armyName + "\n");
         for(Unit unit: units){
-            armyAsString = armyAsString + unit.toString() + "\n";
+            armyAsString.append(unit.toString()).append("\n");
         }
-        return  armyAsString;
+        return armyAsString.toString();
     }
 }

@@ -1,6 +1,8 @@
 package no.ntnu.idatx2001.newsstand.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -11,7 +13,7 @@ import java.util.Random;
 public class Battle implements Serializable{
     private Army armyOne;
     private Army armyTwo;
-    private Random isArmyOneAttacker;
+    private final Random isArmyOneAttacker;
 
     /**
      * Creates instance of Battle
@@ -81,11 +83,44 @@ public class Battle implements Serializable{
                 '}';
     }
 
+    /**
+     * returns ArmyOne as Army.
+     * @return ArmyOne as Army
+     */
     public Army getArmyOne() {
         return armyOne;
     }
 
+    /**
+     * returns ArmyTwo as Army.
+     * @return ArmyTwo as Army
+     */
     public Army getArmyTwo() {
         return armyTwo;
     }
+
+    public List<Unit> getAllUnits(){
+        List<Unit> units = new ArrayList<>(getArmyOne().getAllUnits());
+        units.addAll(getArmyTwo().getAllUnits());
+        return units;
+    }
+
+    public List<Unit> getRangeUnits(){
+        List<Unit> rangedUnits = new ArrayList<>(getArmyOne().getRangedUnits());
+        rangedUnits.addAll(getArmyTwo().getRangedUnits());
+        return rangedUnits;
+    }
+
+    public List<Unit> getInfantryUnits(){
+        List<Unit> infantryUnits = new ArrayList<>(getArmyOne().getInfantryUnits());
+        infantryUnits.addAll(getArmyTwo().getInfantryUnits());
+        return infantryUnits;
+    }
+
+    public List<Unit> getCavalryUnits(){
+        List<Unit> rangedUnits = new ArrayList<>(getArmyOne().getCavalryUnits());
+        rangedUnits.addAll(getArmyTwo().getCavalryUnits());
+        return rangedUnits;
+    }
+
 }

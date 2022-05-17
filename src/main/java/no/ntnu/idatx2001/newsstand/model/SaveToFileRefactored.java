@@ -1,7 +1,7 @@
 package no.ntnu.idatx2001.newsstand.model;
 
 import java.io.*;
-import java.util.Iterator;
+import java.nio.file.Files;
 
 /**
  * Responsible for saving and retrieving army in a .csv file. Throws IOException.
@@ -25,7 +25,7 @@ public class SaveToFileRefactored {
             if(armyNumber < 2 && armyNumber>= 0) {
                 File file = new File(filename);
                 if(!file.createNewFile()){
-                    file.delete();
+                    Files.delete(file.toPath());
                     file = new File(filename);
                 }
                 PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file)));
@@ -40,12 +40,11 @@ public class SaveToFileRefactored {
 
     /**
      * Retrieves army from .csv file using number of army 0 or 1. Throws IOException.
-     * @param armyNumber as int.
-     * @return army As Army. 
-     * @throws IOException if it can not find file or file content is corrupted.
+     * @param filename as int.
+     * @return army As Army.
      */
 
-    public Army retrieveArmy(String filename) throws IOException{
+    public Army retrieveArmy(String filename) {
         String line;
         Army army = null;
         UnitFactory unitFactory = new UnitFactory();
@@ -63,8 +62,8 @@ public class SaveToFileRefactored {
                 }
             }
             catch (IOException e){e.printStackTrace();}
-        for (Iterator<Unit> it = unitFactory.retrieveUnits().iterator(); it.hasNext(); ) {
-            Unit unit = it.next();
+        for (Unit unit : unitFactory.retrieveAllunits()) {
+            assert army != null;
             army.add(unit);
         }
         return army;

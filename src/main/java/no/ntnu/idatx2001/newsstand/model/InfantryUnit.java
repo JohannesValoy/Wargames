@@ -15,8 +15,7 @@ public class InfantryUnit extends Unit {
      * @param attack int
      * @param armor int
      */
-    public InfantryUnit(String name, int health, int attack,
-                        int armor) {
+    public InfantryUnit(String name, int health, int attack, int armor) {
         super(name, health, attack, armor);
     }
 
@@ -38,8 +37,9 @@ public class InfantryUnit extends Unit {
 
     @Override
     public int getAttackBonus() {
-        attackBonus = 2;
-        if (attacks == 0) {attackBonus += 4;}
+        int attackBonus = 0;
+        attackBonus = this.attackBonus + 2;
+        if (attacks == 0) {attackBonus = attackBonus + 4;}
         return attackBonus;
     }
 
@@ -51,8 +51,7 @@ public class InfantryUnit extends Unit {
 
     @Override
     public int getResistBonus() {
-            resistBonus = 1;
-        return resistBonus;
+        return resistBonus + 1;
     }
 
 }

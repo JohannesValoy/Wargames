@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 class ArmyTest {
 
     /**
@@ -18,14 +19,18 @@ class ArmyTest {
         assertEquals("name", unit.getName());
     }
 
+
+
     /**
-     * tests add() in Army adding and removing a unit.
+     * Tests add() in Army adding and removing a unit.
      */
     @Test
-    void add() {
+    void add() throws Exception {
         Army army = new Army("name");
         Unit unit = new RangedUnit("name", 1);
+        Unit badUnit = new RangedUnit("name", -1);
         army.add(unit);
+        army.add(badUnit);
         assertTrue(army.hasUnits());
 
     }
@@ -34,7 +39,7 @@ class ArmyTest {
      * Test addALl(), adds list of unit to Army.
      */
     @Test
-    void addAll() {
+    void addAll() throws Exception {
 
         Army army = new Army("name");
         Unit unit = new RangedUnit("name", 1);
@@ -52,7 +57,7 @@ class ArmyTest {
      */
 
     @Test
-    void remove() {
+    void remove() throws Exception {
         Army army = new Army("name");
         Unit unit = new RangedUnit("name", 1);
         army.add(unit);
@@ -65,7 +70,7 @@ class ArmyTest {
      */
 
     @Test
-    void getAllUnits() {
+    void getAllUnits() throws Exception {
         Army army = new Army("name");
         Unit unit = new RangedUnit("name", 1);
         Unit unit2 = new RangedUnit("name2", 2);
@@ -78,7 +83,7 @@ class ArmyTest {
      * tests getRandom, adding one unit to Army and checking if it returns it.
      */
     @Test
-    void getRandom() {
+    void getRandom() throws Exception {
         Army army = new Army("name");
         Unit unit = new RangedUnit("name", 1);
         army.add(unit);
@@ -91,7 +96,7 @@ class ArmyTest {
      */
 
     @Test
-    void testToString() {
+    void testToString() throws Exception {
 
         Army army = new Army("name");
         Unit unit = new RangedUnit("name", 1);
@@ -115,7 +120,7 @@ class ArmyTest {
      * test if hashCode corresponds to previous HashCode.
      */
     @Test
-    void testHashCode() {
+    void testHashCode() throws Exception {
         Army army = new Army("name");
         Unit unit = new RangedUnit("name", 1);
         army.add(unit);
@@ -123,7 +128,7 @@ class ArmyTest {
     }
 
     @Test
-    void simulate() {
+    void simulate() throws Exception {
         CommanderUnit unit1 = new CommanderUnit("name", 2);
         CommanderUnit unit2 = new CommanderUnit("name", 2);
         CavalryUnit unit3 = new CavalryUnit("name", 2);

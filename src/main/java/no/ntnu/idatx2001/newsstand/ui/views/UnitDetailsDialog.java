@@ -2,8 +2,6 @@ package no.ntnu.idatx2001.newsstand.ui.views;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
-import no.ntnu.idatx2001.newsstand.model.CavalryUnit;
 import no.ntnu.idatx2001.newsstand.model.Unit;
 import no.ntnu.idatx2001.newsstand.model.UnitFactory;
 
@@ -12,13 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A dialog used to get the necessary information about a newspaper from the
- * user, in order to be able to create a Newspaper instance to be added to the
+ * A dialog used to get the necessary information about a Unit from the
+ * user, in order to be able to create a Unit instance to be added to the
  * register. The dialog can be opened in 3 different modes:
  * <ul>
- * <li> EDIT - Used for editing an existing Newspaper.</li>
- * <li> NEW - Used for entering information to create a new Newspaper.</li>
- * <li> INFO - Used to show non-editable info of a Newspaper</li>
+ * <li> EDIT - Used for editing an existing Unit.</li>
+ * <li> NEW - Used for entering information to create a new Unit.</li>
+ * <li> INFO - Used to show non-editable info of a Unit</li>
  * </ul>
  *
  * @author asty
@@ -27,8 +25,8 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
 
     /**
      * The mode of the dialog. If the dialog is opened to edit an existing
-     * Newspaper, the mode is set to <code>Mode.EDIT</code>. If the dialog is
-     * opened to create a new Newspaper, the <code>Mode.NEW</code> is used.
+     * Unit, the mode is set to <code>Mode.EDIT</code>. If the dialog is
+     * opened to create a new Unit, the <code>Mode.NEW</code> is used.
      */
     public enum Mode {
         NEW, EDIT, INFO
@@ -36,27 +34,29 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
 
 
     /**
-     * The mode of the dialog. NEW if new Newspaper, EDIT if edit existing
-     * Newspaper.
+     * The mode of the dialog. NEW if new Unit, EDIT if edit existing
+     * Unit.
      */
     private final Mode mode;
 
     /**
-     * Holds the Newspaper instance to edit, if any.
+     * Holds the Unit instance to edit, if any.
      */
     private Unit existingArmyUnit = null;
 
     /**
-     * The GUI-components holding the Newspaper information.
+     * The GUI-components holding the Unit information.
      */
     private TextField title;
     private TextField issueNoTxt;
     private ChoiceBox<String> unitType;
     private TextField numberOfUnits;
+    private Label attackBonus;
+    private Label resistBonus;
 
     /**
-     * Creates an instance of the NewspaperDetails dialog to get information to
-     * create a new instance of Newspaper.
+     * Creates an instance of the UnitDetails dialog to get information to
+     * create a new instance of Unit.
      */
     public UnitDetailsDialog() {
         super();
@@ -94,6 +94,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
         // Set the button types.
         if (this.mode == Mode.INFO) {
             getDialogPane().getButtonTypes().addAll(ButtonType.OK);
+
         } else {
             getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         }
@@ -111,6 +112,8 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
         this.unitType.setValue("Unit Type");
         this.numberOfUnits = new TextField();
         this.numberOfUnits.setPromptText("Number of Units");
+        this.attackBonus = new Label();
+        this.resistBonus = new Label();
 
         // Prevent characters (non-integers) to be added. By adding an event listener
         // to the TextField for the issue number, this event is fired for each keypress
@@ -130,7 +133,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
         this.issueNoTxt.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 if (newValue.length() > 0) {
-                    Integer.parseInt(newValue);
+                        Integer.parseInt(newValue);
                 }
             } catch (NumberFormatException e) {
                 // The user have entered a non-integer character, hence just keep the
@@ -141,7 +144,11 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
         this.numberOfUnits.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 if (newValue.length() > 0) {
-                    Integer.parseInt(newValue);
+                    if(newValue.length() < 5){
+                        Integer.parseInt(newValue);
+                    }else {
+                        this.numberOfUnits.setText(oldValue);
+                    }
                 }
             } catch (NumberFormatException e) {
                 // The user have entered a non-integer character, hence just keep the
@@ -151,17 +158,26 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
         });
 
 
-        // Fill inn data from the provided Newspaper, if not null.
+        // Fill inn data from the provided Unit, if not null.
         if ((mode == Mode.EDIT) || (mode == Mode.INFO)) {
             title.setText(existingArmyUnit.getName());
             issueNoTxt.setText(Integer.toString(existingArmyUnit.getHealth()));
             unitType.setValue(existingArmyUnit.getClass().getSimpleName());
             unitType.setDisable(true);
             numberOfUnits.setDisable(true);
+            this.attackBonus.setDisable(true);
+            this.resistBonus.setDisable(true);
+
+            this.attackBonus.setText(existingArmyUnit.getAttackBonus() + "");
+            this.resistBonus.setText(existingArmyUnit.getResistBonus() + "");
             // Set to non-editable if Mode.INFO
             if (mode == Mode.INFO) {
                 title.setEditable(false);
                 issueNoTxt.setEditable(false);
+                grid.add(new Label("Attack-bonus:"), 3, 0);
+                grid.add(attackBonus, 4, 0);
+                grid.add(new Label("Resist-bonus:"), 3, 1);
+                grid.add(resistBonus, 4, 1);
             }
         }
 
@@ -169,17 +185,13 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
         // about the Newspaper
         grid.add(new Label("Name:"), 0, 0);
         grid.add(title, 1, 0);
-        grid.add(new Label("Health:"), 0, 2);
-        grid.add(issueNoTxt, 1, 2);
-        String cavalryUnit = "CavalryUnit";
-        String commanderUnit = "CommanderUnit";
-        String infantryUnit = "InfantryUnit";
-        String rangedUnit = "RangedUnit";
-        grid.add(new Label("Unit Type:"), 0, 3);
-        this.unitType.getItems().addAll(cavalryUnit, commanderUnit, infantryUnit, rangedUnit);
-        grid.add(unitType, 1, 3);
-        grid.add(new Label("Number of Units:"), 0, 4);
-        grid.add(numberOfUnits, 1, 4);
+        grid.add(new Label("Health:"), 0, 1);
+        grid.add(issueNoTxt, 1, 1);
+        grid.add(new Label("Unit Type:"), 0, 2);
+        this.unitType.getItems().addAll("CavalryUnit", "CommanderUnit", "InfantryUnit", "RangedUnit");
+        grid.add(unitType, 1, 2);
+        grid.add(new Label("Number of Units:"), 0, 3);
+        grid.add(numberOfUnits, 1, 3);
 
         getDialogPane().setContent(grid);
     }
@@ -190,6 +202,8 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
      * opened in (EDIT, NEW, INFO).
      */
     private void defineReturnInstance() {
+        //TODO: Check for exepetions when fields are empty and unittype not chosen.
+
         // Convert the result to Newspaper-instance when the OK button is clicked.
         // In this example I use lambda. Could also have been solved using anonymous inner class
         // Check out: https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/Dialog.html#setResultConverter-javafx.util.Callback-
@@ -199,6 +213,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
                     List<Unit> result = null;
                     if (button == ButtonType.OK) {
                         int issueNo = Integer.parseInt(this.issueNoTxt.getText());
+
 
                         // Note how the mode of the dialog effects how to deal with the result.
                         // If we opened the dialog in EDIT-mode, the changes been made by the user in the
@@ -214,7 +229,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
                             Unit unit = null;
                             try {
                                 unitFactory.addUnit(issueNo, this.title.getText(), this.unitType.getSelectionModel().getSelectedItem(),numberOfUnits);
-                                result = unitFactory.retrieveUnits();
+                                result = unitFactory.retrieveAllunits();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }

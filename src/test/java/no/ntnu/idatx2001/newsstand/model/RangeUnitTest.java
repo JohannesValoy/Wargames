@@ -26,6 +26,13 @@ class RangeUnitTest {
         assertEquals(6, unit.getResistBonus());
     }
 
+    @Test
+    void addResistBonus(){
+        RangedUnit rangedUnit = new RangedUnit("name", 2, 3, 4);
+        rangedUnit.addResistBonus(50);
+        assertEquals(56, rangedUnit.getResistBonus());
+    }
+
 
     /**
      * Tests setHealth by setting health and comparing to expected outcome.

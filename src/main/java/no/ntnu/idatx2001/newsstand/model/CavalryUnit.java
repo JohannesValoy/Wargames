@@ -40,8 +40,9 @@ public class CavalryUnit extends Unit {
      */
     @Override
     public int getAttackBonus() {
-        if (chargeReady) {attackBonus = 6;}
-        else {attackBonus = 2;}
+        int attackBonus = 0;
+        if (chargeReady) {attackBonus = this.attackBonus + 6;}
+        else {attackBonus = this.attackBonus + 2;}
         chargeReady = false;
         return attackBonus;
     }
@@ -53,6 +54,6 @@ public class CavalryUnit extends Unit {
 
     @Override
     public int getResistBonus() {
-        return 1;
+        return this.resistBonus + 1;
     }
 }

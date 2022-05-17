@@ -11,7 +11,7 @@ class FileControllerTest {
         Army army = new Army("name");
         FileController fileController = new FileController();
         fileController.saveBattle(army);
-        assertEquals(army.getClass(), fileController.retriveBattle().getClass());
+        assertEquals(army.getClass(), fileController.retrieveBattle().getClass());
     }
 
     @Test
@@ -19,6 +19,6 @@ class FileControllerTest {
         CavalryUnit tournament = new CavalryUnit("Name",1);
         FileController fileController = new FileController();
         fileController.saveBattle(tournament);
-        assertEquals(tournament.getClass(), fileController.retriveBattle().getClass());
+        assertEquals(tournament.getClass(), fileController.retrieveBattle().getClass());
     }
 }

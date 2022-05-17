@@ -11,25 +11,17 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.util.Pair;
 import no.ntnu.idatx2001.newsstand.model.*;
 import no.ntnu.idatx2001.newsstand.ui.views.UnitDetailsDialog;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +29,7 @@ import java.util.logging.Logger;
  * <p>The main controller of the application. This controller will be the
  * "glue" between the GUI and the underlying business logic. Hence
  * it is the responsibility of this class to create the instance of the
- * LiteratureRegister-class, and initialize the instance.</p>
+ * Battle-class, and initialize the instance.</p>
  * <p>The class implements the {@code Initializable} interface, which defines
  * the {@code initialize()}-method, replacing the constructor.
  * The {@code initialize()}-method is being called by the JavaFX runtime
@@ -49,7 +41,8 @@ public class MainWindowAppController implements Initializable {
   private Battle battle;
   private ObservableList<Unit> observableArmyOne;
   private ObservableList<Unit> observableArmyTwo;
-  private Logger logger = Logger.getLogger(getClass().toString());
+  private String terrain;
+  private final Logger logger = Logger.getLogger(getClass().toString());
 
   @FXML
   private TableView<Unit> armyOneTableView;
@@ -64,63 +57,47 @@ public class MainWindowAppController implements Initializable {
   @FXML
   private TableColumn<Unit, String> healthColumnArmyTwo;
   @FXML
-  private ChoiceBox<String> terrainChoice;
-  @FXML
   private TextField winner;
-  @FXML
-  private Button open;
-  @FXML
-  private Button restart;
-  @FXML
-  private Button export;
 
 
+  /**
+   * Initializes the table-view UI-element, and retrieves the battle from saved file if available.
+   * Initializes observableList observableArmyOne and observableList observableArmyTwo for use in the table-view.
+   * @param url TODO research and add Comment Here.
+   * @param resourceBundle TODO research and add Comment Here.
+   */
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
-    // Create the business logic by creating an instance of
-    // LiteratureRegister and filling it with dummy data.
     winner.setEditable(false);
-    Army armyOne = new Army("ArmyOne");
-    Army armyTwo = new Army("ArmyTwo");
-    String forest = "Forest";
-    String plains = "Plains";
-    String hill = "Hills";
-    terrainChoice.getItems().addAll(forest, plains, hill);
-    terrainChoice.setValue("Terrain");
     try {
       FileController fileController = new FileController();
-      this.battle = fileController.retriveBattle();
+      this.battle = fileController.retrieveBattle();
     } catch (IOException e) {
-      this.battle = new Battle(armyOne, armyTwo);
+      this.battle = new Battle(new Army("ArmyOne"), new Army("ArmyTwo"));
     }
-
-
-    // Finalize the setup of the TableView
-    nameColumnArmyOne.setMinWidth(150);
+    this.terrain = null;
+    // Finalize the setup of the TableView for armyOne and armyTwo.
     nameColumnArmyOne.setCellValueFactory(new PropertyValueFactory<>("name"));
-    healthColumnArmyOne.setMinWidth(150);
     healthColumnArmyOne.setCellValueFactory(new PropertyValueFactory<>("health"));
 
-    nameColumnArmyTwo.setMinWidth(150);
     nameColumnArmyTwo.setCellValueFactory(new PropertyValueFactory<>("name"));
-    healthColumnArmyTwo.setMinWidth(150);
     healthColumnArmyTwo.setCellValueFactory(new PropertyValueFactory<>("health"));
 
     // Attach action listener
-    // Add listener for double click on row
+    // Add listener for double-click on row
     this.armyOneTableView.setOnMousePressed(mouseEvent -> {
       if (mouseEvent.isPrimaryButtonDown() && (mouseEvent.getClickCount() == 2)) {
-        this.showUnitDetails(null);
+        this.showUnitDetails();
       }
     });
 
     this.armyTwoTableView.setOnMousePressed(mouseEvent -> {
       if (mouseEvent.isPrimaryButtonDown() && (mouseEvent.getClickCount() == 2)) {
-        this.showUnitDetails(null);
+        this.showUnitDetails();
       }
     });
 
-    // Populate the TableView by data from the literature register
+    // Populate the TableView by data from the battle-Class
     this.observableArmyOne =
         FXCollections.observableArrayList(this.battle.getArmyOne().getAllUnits());
     this.armyOneTableView.setItems(this.observableArmyOne);
@@ -130,47 +107,16 @@ public class MainWindowAppController implements Initializable {
     this.armyTwoTableView.setItems(this.observableArmyTwo);
   }
 
-  //todo: how to make this work
-  public void makeTable() {
-    boolean isArmyOne = true;
-
-    TableColumn<Unit, String> nameColumn = this.nameColumnArmyOne;
-    TableColumn<Unit, String> healthColumn = healthColumnArmyOne;
-    TableView<Unit> c = this.armyOneTableView;
-    ObservableList<Unit> d = this.observableArmyOne;
-    Army e = battle.getArmyOne();
-    if (!isArmyOne) {
-      nameColumnArmyOne = nameColumnArmyTwo;
-      healthColumn = healthColumnArmyTwo;
-      c = this.armyTwoTableView;
-      d = this.observableArmyTwo;
-      e = battle.getArmyTwo();
-    }
-
-    nameColumn.setMinWidth(150);
-    nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-    healthColumn.setMinWidth(150);
-    healthColumn.setCellValueFactory(new PropertyValueFactory<>("health"));
-
-    c.setOnMousePressed(mouseEvent -> {
-      if (mouseEvent.isPrimaryButtonDown() && (mouseEvent.getClickCount() == 2)) {
-        this.showUnitDetails(null);
-      }
-    });
-
-    d = FXCollections.observableArrayList(e.getAllUnits());
-    c.setItems(d);
-  }
-
   /**
-   * Display the input dialog to get input to create a new Newspaper.
-   * If the user confirms creating a new newspaper, a new instance
-   * of Newspaper is created and added to the literature register provided.
-   *
-   * @param actionEvent the event triggering the action
+   * Display the input dialog to get input to create a new Unit in armyOne.
+   * If the user confirms creating a new unit, a new instance
+   * of Unit is created and added to armyOne battle-class.
    */
+
+  //The methods for armyOne and armyTwo is split in two,
+  // as they update two different table-views.
   @FXML
-  public void addArmyUnitArmyOne(ActionEvent actionEvent) {
+  public void addArmyUnitArmyOne() {
 
     UnitDetailsDialog npDialog = new UnitDetailsDialog();
 
@@ -183,10 +129,17 @@ public class MainWindowAppController implements Initializable {
       }
         this.updateObservableArmyOne();
     }
+    terrainChoiceCase();
   }
 
+  /**
+   * Display the input dialog to get input to create a new Unit in armyTwo.
+   * If the user confirms creating a new unit, a new instance
+   * of Unit is created and added to armyTwo battle-class.
+   */
+
   @FXML
-  public void addArmyUnitArmyTwo(ActionEvent actionEvent) {
+  public void addArmyUnitArmyTwo() {
 
     UnitDetailsDialog npDialog = new UnitDetailsDialog();
     Optional<List<Unit>> result = npDialog.showAndWait();
@@ -198,105 +151,132 @@ public class MainWindowAppController implements Initializable {
       }
       this.updateObservableArmyTwo();
     }
+    terrainChoiceCase();
   }
 
   /**
-   * Deletes the literature selected in the table. If no literature is
+   * Deletes the Unit selected in the table. If no Unit is
    * selected, nothing is deleted, and the user is informed that he/she must
-   * select which literature to delete.
+   * select which Unit to delete.
    *
-   * @param actionEvent the event triggering the action
    */
   @FXML
-  public void deleteArmyUnit(ActionEvent actionEvent) {
+  public void deleteArmyUnit() {
+    // selected in armyOne table-view.
     Unit selectedArmyOne =
             this.armyOneTableView.getSelectionModel().getSelectedItem();
+
+    // selected in armyTwo table-view.
     Unit selectedArmyTwo =
             this.armyTwoTableView.getSelectionModel().getSelectedItem();
 
     if (selectedArmyOne == null && selectedArmyTwo == null) {
       showPleaseSelectItemDialog();
     } else {
-      if (showDeleteConfirmationDialog()) {
-        if(selectedArmyOne != null){
+      // armyOne
+      if (showDeleteConfirmationDialog() && selectedArmyOne != null) {
         this.battle.getArmyOne().remove(selectedArmyOne);
-        this.updateObservableArmyOne();}
+        this.updateObservableArmyOne();
       }
-      if(selectedArmyTwo != null){
+      // armyTwo
+      if(showDeleteConfirmationDialog() && selectedArmyTwo != null){
         this.battle.getArmyTwo().remove(selectedArmyTwo);
         this.updateObservableArmyTwo();}
       }
-
     }
 
+
+  /**
+   * If the terrain is chosen, it starts the simulation.
+   * If the terrain is null, it will not do anything.
+   */
   @FXML
-  public void simulate(ActionEvent actionEvent) throws IOException {
-    winner.setText(this.battle.simulate().getName());
-    String terrainType = terrainChoice.getSelectionModel().getSelectedItem();
-    switch (terrainType) {
-      case "Hills" -> {
-        for(Unit rangedUnit: battle.getArmyOne().getRangedUnits()){
-          rangedUnit.setAttackBonus(rangedUnit.getAttackBonus() + 2);
-
-        }for(Unit rangeUnit: battle.getArmyTwo().getRangedUnits()){
-          rangeUnit.setAttackBonus(rangeUnit.getAttackBonus() + 2);
-        }
-      }
-
-      case "Plains" -> {
-        for(Unit cavalryUnit: battle.getArmyOne().getCavalryUnits()){
-          cavalryUnit.setAttackBonus(cavalryUnit.getAttackBonus() + 3);
-        }
-        for(Unit cavalryUnit: battle.getArmyTwo().getCavalryUnits()){
-          cavalryUnit.setAttackBonus(cavalryUnit.getAttackBonus() + 3);
-        }
-      }
-
-      case "Forest" -> {
-        for(Unit cavalryUnit: battle.getArmyOne().getCavalryUnits()){
-          cavalryUnit.setAttackBonus(0);
-        }
-        for(Unit cavalryUnit: battle.getArmyTwo().getCavalryUnits()){
-          cavalryUnit.setAttackBonus(0);
-        }
-        for(Unit rangedUnit: battle.getArmyOne().getRangedUnits()){
-          rangedUnit.setAttackBonus(rangedUnit.getAttackBonus() + 2);
-        }
-        for(Unit rangeUnit: battle.getArmyTwo().getRangedUnits()){
-          rangeUnit.setAttackBonus(rangeUnit.getAttackBonus() + 2);
-        }
-        for(Unit infantryUnit: battle.getArmyOne().getInfantryUnits()){
-          infantryUnit.setAttackBonus(infantryUnit.getAttackBonus() + 5);
-          infantryUnit.setArmor(infantryUnit.getArmor() + 5);
-        }
-        for(Unit infantryUnit: battle.getArmyTwo().getInfantryUnits()){
-          infantryUnit.setAttackBonus(infantryUnit.getAttackBonus() + 5);
-          infantryUnit.setArmor(infantryUnit.getArmor() + 5);
-        }
-      }
-      default -> throw new IOException();
+  public void simulate() {
+    if(terrain != null) {
+      winner.setText(this.battle.simulate().getName());
+      updateObservableArmyOne();
+      updateObservableArmyTwo();
     }
-    this.updateObservableArmyOne();
-    this.updateObservableArmyTwo();
+  }
+
+  /**
+   * To be called when the terrain 'Hills' is chosen.
+   */
+  public void onHills() {
+    this.terrain = "Hills";
+    terrainChoiceCase();
+  }
+
+  /**
+   * To be called when the terrain 'Plains' is chosen.
+   */
+  public void onPlains() {
+    this.terrain = "Plains";
+    terrainChoiceCase();
+  }
+
+  /**
+   * To be called when the terrain 'Forest' is chosen.
+   */
+  public void onForest() {
+    this.terrain = "Forest";
+    terrainChoiceCase();
 
   }
+
+  /**
+   * Adds resistBonus and attackBonus the Cavalry, Commander, Infantry and Ranged-Units in the battle-class.
+   * If the set terrain is not 'Hills', 'Plains', 'Forest' or null, there will ve thrown an IllegalArgumentException to the terminal.
+   * TODO make Exception to logger.log.
+   */
+  public void terrainChoiceCase() {
+    Army army = battle.getArmyOne();
+    int i = 0;
+
+    while(i < 2) {
+      for (Unit unit : army.getAllUnits()) {
+        unit.addAttackBonus(0);
+        unit.addResistBonus(0);
+      }
+      if(terrain != null){
+      switch (terrain) {
+        case "Hills" -> army.getAllUnits().stream().filter(RangedUnit.class::isInstance).forEach(unit -> unit.addAttackBonus(2));
+
+        case "Plains" -> army.getAllUnits().stream().filter(CavalryUnit.class::isInstance).forEach(unit -> unit.addAttackBonus(3));
+
+        case "Forest" -> {
+          army.getAllUnits().stream().filter(RangedUnit.class::isInstance).forEach(unit -> unit.addAttackBonus(2));
+          army.getAllUnits().stream().filter(InfantryUnit.class::isInstance).forEach(unit -> unit.addAttackBonus(5));
+          army.getAllUnits().stream().filter(RangedUnit.class::isInstance).forEach(unit -> unit.addResistBonus(5));
+        }
+        default -> throw new IllegalArgumentException("Terrain must either be 'Hills', 'Plains', 'Forest' or null");
+      }
+      }
+      i++;
+
+      this.updateObservableArmyOne();
+      this.updateObservableArmyTwo();
+      army.getAllUnits().stream().forEach(unit -> System.out.println(unit.getResistBonus()));
+      army.getAllUnits().stream().forEach(unit -> System.out.println(unit.getAttackBonus()));
+      army = battle.getArmyTwo();
+    }
+  }
+
   /**
    * Edit the selected item.
    *
-   * @param actionEvent the event triggering the action
    */
   @FXML
-  public void editUnit(ActionEvent actionEvent) {
+  public void editUnit() {
     unitDialog(true);
   }
 
   /**
    * Show details of the selected item.
    *
-   * @param actionEvent the event triggering the action
    */
   @FXML
-  public void showUnitDetails(ActionEvent actionEvent) {
+  public void showUnitDetails() {
     unitDialog(false);
   }
 
@@ -329,8 +309,8 @@ public class MainWindowAppController implements Initializable {
    * Displays a confirmation dialog with custom actions.
    */
   @FXML
-  public void chooseUnitType(ActionEvent actionEvent) throws IOException {
-    if(terrainChoice.getSelectionModel().isEmpty()) {
+  public void chooseTerrainType() {
+    if(terrain == null) {
       Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
       alert.setTitle("Choose terrain type");
       alert.setHeaderText("Choose the terrain type, this can be changed in the <Terrain> dropdown menu");
@@ -347,11 +327,14 @@ public class MainWindowAppController implements Initializable {
 
       if (result.isPresent()) {
         if (result.get() == buttonTypeOne) {
-          terrainChoice.getSelectionModel().select(0);
+          terrain = "Forest";
+          terrainChoiceCase();
         } else if (result.get() == buttonTypeTwo) {
-          terrainChoice.getSelectionModel().select(1);
+          terrain = "Plains";
+          terrainChoiceCase();
         } else if (result.get() == buttonTypeThree) {
-          terrainChoice.getSelectionModel().select(2);
+          terrain = "Hills";
+          terrainChoiceCase();
           logger.log(Level.INFO, "User chose THREE..");
         } else {
           // ... user chose CANCEL or closed the dialog
@@ -359,31 +342,43 @@ public class MainWindowAppController implements Initializable {
         }
       }
     }
-    simulate(actionEvent);
+    simulate();
   }
 
+
+  @FXML
+  public void save() throws IOException {
+    FileController fileController = new FileController();
+    fileController.saveBattle(battle);
+  }
   /**
+   * TODO: make filecontroller in the initialize or the contstructor. this.filecontroller.
    * Exit the application. Displays a confirmation dialog.
    */
   @FXML
-  public void exitApplicationdoExitApplication(ActionEvent actionEvent) throws IOException {
-    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-    alert.setTitle("Confirmation Dialog");
-    alert.setHeaderText("Exit Application ?");
-    alert.setContentText("Are you sure you want to exit this application?");
+  public void exit() throws IOException {
+    FileController fileController = new FileController();
+    fileController.saveBattle(battle);
+    Platform.exit();
+    /**
+     * Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+     *     alert.setTitle("Confirmation Dialog");
+     *     alert.setHeaderText("Exit Application ?");
+     *     alert.setContentText("Are you sure you want to exit this application?");
+     *
+     *     Optional<ButtonType> result = alert.showAndWait();
+     *     if (result.isPresent()) {
+     *       if (result.get() == ButtonType.OK) {
+     *         ----------------------- code moved to the topp.
+     *       } else {
+     *         // ... user chose CANCEL or closed the dialog
+     *         // then do nothing.
+     *       }
+     *     }
+     */
 
-    Optional<ButtonType> result = alert.showAndWait();
 
-    if (result.isPresent()) {
-      if (result.get() == ButtonType.OK) {
-        FileController fileController = new FileController();
-        fileController.saveBattle(battle);
-        Platform.exit();
-      } else {
-        // ... user chose CANCEL or closed the dialog
-        // then do nothing.
-      }
-    }
+
   }
 
   /**
@@ -391,7 +386,7 @@ public class MainWindowAppController implements Initializable {
    * type of dialog.
    */
   @FXML
-  public void showAboutDialog(ActionEvent actionEvent) {
+  public void showAboutDialog() {
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle("Information Dialog - About");
     alert.setHeaderText("Wargames");
@@ -417,7 +412,7 @@ public class MainWindowAppController implements Initializable {
    *
    */
   @FXML
-  public void open(ActionEvent actionEvent) throws IOException {
+  public void open() {
     File fileArmyOne = openDialog();
     File fileArmyTwo = openDialog();
     SaveToFileRefactored saveToFileRefactored = new SaveToFileRefactored();
@@ -428,13 +423,13 @@ public class MainWindowAppController implements Initializable {
     this.updateObservableArmyTwo();
   }
 
-  public File openDialog(){
-    FileChooser fileChooserArmyTwo = new FileChooser();
-    fileChooserArmyTwo.setTitle("Open Resource File Army Two");
-    fileChooserArmyTwo.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("Text Files", "*.csv"));
-    return fileChooserArmyTwo.showOpenDialog(null);
+  @FXML
+  public void resetSession() throws IOException {
+    this.battle = new FileController().retrieveBattle();
+    updateObservableArmyOne();
+    updateObservableArmyTwo();
   }
+
   /**
    * Updates the observable literature register by replacing the entire content
    * by the current content in the literature register.
@@ -448,9 +443,32 @@ public class MainWindowAppController implements Initializable {
     this.observableArmyTwo.setAll(this.battle.getArmyTwo().getAllUnits());
   }
 
+  public void selectedArmyTwo() {
+    this.armyOneTableView.getSelectionModel().clearSelection();
+  }
+  public void selectedArmyOne() {
+    this.armyTwoTableView.getSelectionModel().clearSelection();
+  }
+
+  @FXML
+  public void restart(){
+    this.battle = new Battle(new Army("ArmyOne"), new Army("ArmyTwo"));
+    updateObservableArmyOne();
+    updateObservableArmyTwo();
+  }
+
+
   // -----------------------------------------------------------
   //    DIALOGS
   // -----------------------------------------------------------
+
+  public File openDialog(){
+    FileChooser fileChooserArmyTwo = new FileChooser();
+    fileChooserArmyTwo.setTitle("Open Resource File Army Two");
+    fileChooserArmyTwo.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Text Files", "*.csv"));
+    return fileChooserArmyTwo.showOpenDialog(null);
+  }
 
   /**
    * Displays a delete confirmation dialog. If the user confirms the delete,
@@ -489,18 +507,6 @@ public class MainWindowAppController implements Initializable {
     alert.showAndWait();
   }
 
-  public void selectedArmyTwo() {
-    this.armyOneTableView.getSelectionModel().clearSelection();
-  }
-  public void selectedArmyOne() {
-    this.armyTwoTableView.getSelectionModel().clearSelection();
-  }
 
-  @FXML
-  public void restart(){
-      this.battle = new Battle(new Army("ArmyOne"), new Army("ArmyTwo"));
-      updateObservableArmyOne();
-      updateObservableArmyTwo();
-  }
 }
 

@@ -25,9 +25,22 @@ public abstract class Unit implements Serializable{
 
     protected Unit(String name, int health, int attack, int armor) {
         this.name = name;
-        this.health = health;
-        this.attack = attack;
-        this.armor = armor;
+        if(health > 0){
+            this.health = health;
+        } else {
+            throw new IllegalArgumentException("Health must be more than 0");}
+
+        if(attack > 0){
+            this.attack = attack;
+        } else {
+            throw new IllegalArgumentException("Attack must be more than 0");
+        }
+        if(armor >= 0){
+            this.armor = armor;
+        } else {
+            throw new IllegalArgumentException("armor must be 0 or more");
+        }
+
     }
 
     /**
@@ -58,7 +71,6 @@ public abstract class Unit implements Serializable{
      * @return  Health of opponent as int
      */
     public int getHealth(){
-
         return this.health;
     }
 
@@ -68,23 +80,11 @@ public abstract class Unit implements Serializable{
      * @return attack as int
      */
     public int getAttack(){
-
         return attack;
     }
 
     public int getArmor() {
-
-        return armor;
-    }
-
-    //TODO: check if supposed to have this function (related to the terrain function)
-    public void setArmor(int armor){
-        this.armor = armor;
-    }
-
-    //TODO: check if supposed to have this function (related to the terrain function)
-    public void setAttackBonus(int attackBonus){
-        this.attackBonus = attackBonus;
+        return armor + resistBonus;
     }
 
     /**
@@ -93,7 +93,9 @@ public abstract class Unit implements Serializable{
      * @param health as int
      */
     public void setHealth(int health) {
-        this.health = Math.max(health, 0);
+        if(health > 0) {
+            this.health = Math.max(health, 0);
+        } else { throw new IllegalArgumentException("Health must be more than 0");}
     }
 
     /**
@@ -122,4 +124,24 @@ public abstract class Unit implements Serializable{
      */
 
     public abstract int getResistBonus();
+
+    //TODO: check if supposed to have this function (related to the terrain function)
+    public void addAttackBonus(int attackBonus){
+        if(attackBonus >= 0){
+            this.attackBonus = attackBonus;
+        } else {
+            throw new IllegalArgumentException("Attack-bonus must be 0 or more");
+        }
+    }
+
+    //TODO: check if supposed to have this function (related to the terrain function)
+    public void addResistBonus(int resistBonus){
+        if(attackBonus >= 0){
+            this.resistBonus = resistBonus;
+        } else {
+            throw new IllegalArgumentException("Resist-bonus must be 0 or more");
+        }
+    }
+
+
 }
