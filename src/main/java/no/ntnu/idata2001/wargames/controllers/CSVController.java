@@ -2,9 +2,10 @@ package no.ntnu.idata2001.wargames.controllers;
 
 import no.ntnu.idata2001.wargames.factory.UnitFactory;
 import no.ntnu.idata2001.wargames.model.Army;
-import no.ntnu.idata2001.wargames.model.Unit;
+import no.ntnu.idata2001.wargames.units.Unit;
 
 import java.io.*;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 
 /**
@@ -29,13 +30,12 @@ public class CSVController {
      * @param armyNumber as int. 0 or 1, the two competing armies.
      * @param filename a {@link java.lang.String} object
      */
-    public void saveArmy(Army army, int armyNumber, String filename){
+    public void saveArmy(Army army, int armyNumber, String filename) throws IOException {
         try {
             if(armyNumber < 2 && armyNumber>= 0) {
                 File file = new File(filename);
                 if(!file.createNewFile()){
-                    Files.delete(file.toPath());
-                    file = new File(filename);
+                    throw new FileAlreadyExistsException("File Already Exists");
                 }
                 PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file)));
                 printWriter.write(army.toString());
@@ -43,7 +43,7 @@ public class CSVController {
                 printWriter.close();
             }
         } catch(IOException e) {
-            e.printStackTrace();
+            throw new IOException(e.getMessage());
         }
     }
 
@@ -54,28 +54,49 @@ public class CSVController {
      * @param filename as int.
      * @return army As Army.
      */
-    public Army retrieveArmy(String filename) {
+    public Army retrieveArmy(String filename) throws IOException {
         String line;
         Army army = null;
         int i = 1;
         UnitFactory unitFactory = new UnitFactory();
-            try (BufferedReader reader = new BufferedReader(new FileReader(filename)))
-            {
-                String armyName = reader.readLine();
-                army = new Army(armyName);
-
-                while ((line = reader.readLine()) != null && i < 1000) {
-                    String[] text = line.split(",");
-                    String unitType = text[0];
-                    String name = text[1];
-                    int health = Integer.parseInt(text[2].replace(" ", ""));
-                    unitFactory.addUnit(health, name, unitType, 1);
-                    i++;
+            try (BufferedReader reader = new BufferedReader(new FileReader(filename))){
+                String firstLine = reader.readLine();
+                if(!firstLine.isEmpty()) {
+                String armyName = firstLine;
+                    army = new Army(armyName);
+                } else {
+                    throw new IOException("Empty army-name error");
                 }
+
+                    while ((line = reader.readLine()) != null && i < 1000) {
+                        String[] text = line.split(",");
+                        String unitType = text[0];
+                        String name = text[1];
+                        int health = 0;
+                        try {
+                            health = Integer.parseInt(text[2].replace(" ", ""));
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            throw new IOException("Health invalid");
+                        }
+                        if (text[0].isEmpty() || text[1].isEmpty() || text[2] == null) {
+                            throw new IOException("File is Corrupted");
+                        } else {
+                            try{ unitFactory.addUnit(health, name, unitType, 1);
+                            } catch (IllegalArgumentException e){
+                                throw new IOException(e.getMessage());
+                            }
+
+                            i++;
+                        }
+                        if(i > 999){
+                            throw new IOException("File has More than 999 units");
+                        }
+
+                    }
+                } catch (IOException e){
+                throw new IOException(e.getMessage());
             }
-            catch (IOException e){army = new Army("ArmyOne");}
         for (Unit unit : unitFactory.retrieveAllunits()) {
-            assert army != null;
             army.add(unit);
         }
         return army;

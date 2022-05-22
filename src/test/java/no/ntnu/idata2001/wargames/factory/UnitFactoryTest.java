@@ -1,6 +1,6 @@
 package no.ntnu.idata2001.wargames.factory;
 
-import no.ntnu.idata2001.wargames.model.*;
+import no.ntnu.idata2001.wargames.units.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

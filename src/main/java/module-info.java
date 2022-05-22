@@ -20,4 +20,6 @@ module no.ntnu.idata2001.wargames {
     opens no.ntnu.idata2001.wargames.factory;
     exports no.ntnu.idata2001.wargames.controllers;
     opens no.ntnu.idata2001.wargames.controllers;
+    exports no.ntnu.idata2001.wargames.units;
+    opens no.ntnu.idata2001.wargames.units;
 }

@@ -18,6 +18,10 @@ import no.ntnu.idata2001.wargames.controllers.FileController;
 import no.ntnu.idata2001.wargames.model.*;
 import no.ntnu.idata2001.wargames.ui.views.UnitDetailsDialog;
 import no.ntnu.idata2001.wargames.controllers.CSVController;
+import no.ntnu.idata2001.wargames.units.CavalryUnit;
+import no.ntnu.idata2001.wargames.units.InfantryUnit;
+import no.ntnu.idata2001.wargames.units.RangedUnit;
+import no.ntnu.idata2001.wargames.units.Unit;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,6 +97,7 @@ public class MainWindowAppController implements Initializable {
       FileController fileController = new FileController();
       this.battle = fileController.retrieveBattle();
     } catch (IOException e) {
+      showErrorDialog("Memory File", "Memory-" + e.getMessage(), "Both armies will be empty");
       this.battle = new Battle(new Army("ArmyOne"), new Army("ArmyTwo"));
     }
 
@@ -136,25 +141,28 @@ public class MainWindowAppController implements Initializable {
   }
 
 
-
   /**
    * Display the input dialog to get input to create a new Unit in armyOne.
    * If the user confirms creating a new unit, a new instance
    * of Unit is created and added to armyOne battle-class.
+   * Checks if there is to many units added and displays a dialog if the amounts allowed are surpassed.
    */
 
-  //The methods for armyOne and armyTwo is split in two,
-  // as they update two different table-views.
   @FXML
   public void addArmyUnitArmyOne() {
+    //If-sentence, tells the user, it´s not possible to add more units, if units are not less than 999,
+    // if not, the showTooManyUnitsDialog is called
+    if(battle.getArmyOne().getAllUnits().size() < 999){
 
+      //Initializes the dialog to add Units.
     UnitDetailsDialog npDialog = new UnitDetailsDialog();
-
     Optional<List<Unit>> result = npDialog.showAndWait();
-
     if (result.isPresent()) {
       List<Unit> newArmyUnit = result.get();
+      //Checks if the sum of units in army and units added is less than 1000,
+      // if not the showTooManyUnitsDialog is called
       if(newArmyUnit.size() + this.battle.getArmyOne().getAllUnits().size() < 1000){
+        //Adds Units to army.
       for (Unit unit: newArmyUnit) {
         this.battle.getArmyOne().add(unit);
       }
@@ -162,31 +170,41 @@ public class MainWindowAppController implements Initializable {
         this.updateObservableArmyOne();
     }
     terrainChoiceCase();
+    } else {showTooManyUnitsDialog();}
   }
 
+  //The methods for armyOne and armyTwo is split in two,
+  // as they update two different table-views.
   /**
    * Display the input dialog to get input to create a new Unit in armyTwo.
    * If the user confirms creating a new unit, a new instance
    * of Unit is created and added to armyTwo battle-class.
+   * Checks if there is to many units added and displays a dialog if the amounts allowed are surpassed.
    */
 
   @FXML
   public void addArmyUnitArmyTwo() {
+    //If-sentence, tells the user, it´s not possible to add more units, if units are not less than 999,
+    // if not, the showTooManyUnitsDialog is called
+    if(battle.getArmyTwo().getAllUnits().size() < 999){
 
-    UnitDetailsDialog npDialog = new UnitDetailsDialog();
-
-    Optional<List<Unit>> result = npDialog.showAndWait();
-
-    if (result.isPresent()) {
-      List<Unit> newArmyUnit = result.get();
-      if(newArmyUnit.size() + this.battle.getArmyTwo().getAllUnits().size() < 1000){
-        for (Unit unit: newArmyUnit) {
-          this.battle.getArmyTwo().add(unit);
-        }
-      } else {showTooManyUnitsDialog();}
-      this.updateObservableArmyTwo();
-    }
-    terrainChoiceCase();
+      //Initializes the dialog to add Units.
+      UnitDetailsDialog npDialog = new UnitDetailsDialog();
+      Optional<List<Unit>> result = npDialog.showAndWait();
+      if (result.isPresent()) {
+        List<Unit> newArmyUnit = result.get();
+        //Checks if the sum of units in army and units added is less than 1000,
+        // if not the showTooManyUnitsDialog is called
+        if(newArmyUnit.size() + this.battle.getArmyTwo().getAllUnits().size() < 1000){
+          //Adds Units to army.
+          for (Unit unit: newArmyUnit) {
+            this.battle.getArmyTwo().add(unit);
+          }
+        } else {showTooManyUnitsDialog();}
+        this.updateObservableArmyTwo();
+      }
+      terrainChoiceCase();
+    } else {showTooManyUnitsDialog();}
   }
 
   /**
@@ -205,15 +223,16 @@ public class MainWindowAppController implements Initializable {
             this.armyTwoTableView.getSelectionModel().getSelectedItem();
 
     if (selectedArmyOne == null && selectedArmyTwo == null) {
-      showPleaseSelectItemDialog();
+      showErrorDialog("Unit Selection Error", "No Unit Selected", "Please Select a Unit from one of the Army-Tables");
     } else {
+      boolean delete = showDeleteConfirmationDialog();
       // armyOne
-      if (showDeleteConfirmationDialog() && selectedArmyOne != null) {
+      if (delete && selectedArmyOne != null) {
         this.battle.getArmyOne().remove(selectedArmyOne);
         this.updateObservableArmyOne();
       }
       // armyTwo
-      if(showDeleteConfirmationDialog() && selectedArmyTwo != null){
+      if(delete && selectedArmyTwo != null){
         this.battle.getArmyTwo().remove(selectedArmyTwo);
         this.updateObservableArmyTwo();}
       }
@@ -228,11 +247,16 @@ public class MainWindowAppController implements Initializable {
    */
   @FXML
   public void simulate() throws IOException {
-    save();
+    if(battle.getArmyOne().hasUnits() && battle.getArmyTwo().hasUnits()){
+      save();
     if(terrain != null) {
       winner.setText(this.battle.simulate().getName());
       updateObservableArmyOne();
       updateObservableArmyTwo();
+    }
+    } else {
+      showErrorDialog("Army out of units", "Both armies needs to have units for the simulation to start",
+              "Please add units to both armies or import them from .csv-file");
     }
   }
 
@@ -327,7 +351,7 @@ public class MainWindowAppController implements Initializable {
             this.armyTwoTableView.getSelectionModel().getSelectedItem();
 
     if (selectedArmyOne == null && selectedUnitArmyTwo == null) {
-      showPleaseSelectItemDialog();
+      showErrorDialog("Unit Selection Error", "No Unit Selected", "Please Select a Unit from one of the two Army-Tables");
     } else {
       Unit selectedUnit = null;
       if (selectedArmyOne != null) {
@@ -375,11 +399,6 @@ public class MainWindowAppController implements Initializable {
           terrainChoiceCase();
         } else if (result.get() == buttonTypeThree) {
           terrain = "Hills";
-          terrainChoiceCase();
-          logger.log(Level.INFO, "User chose THREE..");
-        } else {
-          // ... user chose CANCEL or closed the dialog
-          logger.log(Level.INFO, "User chose CANCEL or closed the dialog..");
         }
       }
     }
@@ -427,14 +446,21 @@ public class MainWindowAppController implements Initializable {
    * Exports file as .csv-file. Shows choose- folder-dialog.
    */
   @FXML
-  public void export(){
+  public void export() throws IOException {
     DirectoryChooser directoryChooser = new DirectoryChooser();
     directoryChooser.setTitle("Open Resource File Army One");
     File selectedFolder = directoryChooser.showDialog(null);
-    CSVController CSVController = new CSVController();
-    CSVController.saveArmy(battle.getArmyOne(), 0, selectedFolder.getAbsolutePath() + "\\ArmyOne.csv");
-    CSVController.saveArmy(battle.getArmyTwo(), 0, selectedFolder.getAbsolutePath() + "\\ArmyTwo.csv");
-
+    if (selectedFolder == null) {
+      showErrorDialog("No Folder Chosen", "There is no folder chosen to export to.", "Please choose a folder, hit 'open', and click 'OK'.");
+    } else {
+      CSVController CSVController = new CSVController();
+      try {
+        CSVController.saveArmy(battle.getArmyOne(), 0, selectedFolder.getAbsolutePath() + "\\ArmyOne.csv");
+        CSVController.saveArmy(battle.getArmyTwo(), 0, selectedFolder.getAbsolutePath() + "\\ArmyTwo.csv");
+      } catch (IOException e){
+        showErrorDialog("File export Error", e.getMessage(), "Please select a different folder without other files with the same name as the armies and try again.");
+      }
+    }
   }
 
   /**
@@ -442,18 +468,35 @@ public class MainWindowAppController implements Initializable {
    * by the user. For demo-purposes only.
    */
   @FXML
-  public void open() {
+  public void open() throws IOException {
     File fileArmyOne = openDialog();
     File fileArmyTwo = openDialog();
-    CSVController csvController = new CSVController();
-    csvController.retrieveArmy(fileArmyOne.getAbsolutePath()).getName();
-    this.battle = new Battle(
-            csvController.retrieveArmy(fileArmyOne.getAbsolutePath()),
-            csvController.retrieveArmy(fileArmyTwo.getAbsolutePath()));
-    fileArmyOneLabel.setText(fileArmyOne.getName());
-    fileArmyTwoLabel.setText(fileArmyTwo.getName());
-    this.updateObservableArmyOne();
-    this.updateObservableArmyTwo();
+    if(fileArmyOne == null || fileArmyTwo == null){
+      showErrorDialog("No files chosen", "There is no file chosen", "Please select files that are not empty");
+    } else {
+
+
+      CSVController csvController = new CSVController();
+      Army armyOne = null;
+      Army armTwo = null;
+      try{
+        armyOne = csvController.retrieveArmy(fileArmyOne.getAbsolutePath());}
+      catch (IOException e){
+        showErrorDialog("ArmyOne file corrupted", "Army One-" + e.getMessage(), "Please Select a different file");
+      }
+      try{
+        armTwo = csvController.retrieveArmy(fileArmyTwo.getAbsolutePath());}
+      catch (IOException e){
+        showErrorDialog("ArmyTwo file corrupted", "Army Two-" + e.getMessage(), "Please Select a different file");
+      }
+      if(armyOne != null && armTwo != null){
+      csvController.retrieveArmy(fileArmyOne.getAbsolutePath()).getName();
+      this.battle = new Battle(armyOne, armTwo);
+      fileArmyOneLabel.setText(fileArmyOne.getName());
+      fileArmyTwoLabel.setText(fileArmyTwo.getName());
+      this.updateObservableArmyOne();
+      this.updateObservableArmyTwo();}
+    }
   }
 
   /**
@@ -554,31 +597,25 @@ public class MainWindowAppController implements Initializable {
 
 
   /**
-   * Displays a warning informing the user that an item must be selected from
-   * the table.
-   */
-  private void showPleaseSelectItemDialog() {
-    Alert alert = new Alert(Alert.AlertType.WARNING);
-    alert.setTitle("Information");
-    alert.setHeaderText("No items selected");
-    alert.setContentText("No item is selected from the table.\n"
-        + "Please select an item from the table.");
-
-    alert.showAndWait();
-  }
-
-  /**
    * Displays a warning informing the user that an item must be not add more than 999 units to army.
    */
     private void showTooManyUnitsDialog() {
-      Alert alert = new Alert(Alert.AlertType.WARNING);
-      alert.setTitle("Information");
-      alert.setHeaderText("Cannot add more than 999 units in total");
-      alert.setContentText("Please do not add more than 999 units");
-
-      alert.showAndWait();
+      showErrorDialog("Information", "Cannot add more than 999 units in total", "Please do not add more than 999 units");
     }
 
+  /**
+   * Shows error dialog with the necessary messages.
+   * @param type, message as string shows as the title on the dialog.
+   * @param text, message as string shows as the main message on the dialog.
+   * @param content, message as string shows as the detailed message on the dialog.
+   */
+  private void showErrorDialog(String type, String text, String content) {
+    Alert alert = new Alert(Alert.AlertType.WARNING);
+    alert.setTitle(type);
+    alert.setHeaderText(text);
+    alert.setContentText(content);
 
+    alert.showAndWait();
+  }
 }
 

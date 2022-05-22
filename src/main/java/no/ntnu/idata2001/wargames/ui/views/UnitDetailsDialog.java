@@ -2,10 +2,11 @@ package no.ntnu.idata2001.wargames.ui.views;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import no.ntnu.idata2001.wargames.model.Unit;
+import no.ntnu.idata2001.wargames.units.Unit;
 import no.ntnu.idata2001.wargames.factory.UnitFactory;
 
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,9 +68,9 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
     }
 
     /**
-     * Creates an instance of the NewspaperDetails dialog.
+     * Creates an instance of the UnitDetails dialog.
      *
-     * @param armyUnit the newspaper instance to edit
+     * @param armyUnit the unit instance to edit
      * @param editable  if set to <code>true</code>, the dialog will enable
      *                  editing of the fields in the dialog. if <code>false</code> the
      *                  information will be displayed in non-editable fields.
@@ -187,7 +188,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
         }
 
         // Use the GridPane to create the section of the dialog displaying the details
-        // about the Newspaper
+        // about the Unit
         grid.add(new Label("Name:"), 0, 0);
         grid.add(title, 1, 0);
         grid.add(new Label("Health:"), 0, 1);
@@ -209,7 +210,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
     private void defineReturnInstance() {
         //TODO: Check for exepetions when fields are empty and unittype not chosen.
 
-        // Convert the result to Newspaper-instance when the OK button is clicked.
+        // Convert the result to Unit-instance when the OK button is clicked.
         // In this example I use lambda. Could also have been solved using anonymous inner class
         // Check out: https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/Dialog.html#setResultConverter-javafx.util.Callback-
         // and: https://docs.oracle.com/javase/8/javafx/api/javafx/util/Callback.html
@@ -217,14 +218,15 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
                 (ButtonType button) -> {
                     List<Unit> result = null;
                     if (button == ButtonType.OK) {
-                        int issueNo = Integer.parseInt(this.healthNumber.getText());
+                        try {
+                            int issueNo = Integer.parseInt(this.healthNumber.getText());
 
 
                         // Note how the mode of the dialog effects how to deal with the result.
                         // If we opened the dialog in EDIT-mode, the changes been made by the user in the
-                        // fields of the dialog needs to be changed in the Newspaper-instance given to the
-                        // dialog when opened, and the return will be the updated Newspaper instance.
-                        // If the mode is NEW, a completely new instance of class Newspaper must be created,
+                        // fields of the dialog needs to be changed in the Unit-instance given to the
+                        // dialog when opened, and the return will be the updated Unit instance.
+                        // If the mode is NEW, a completely new instance of class Unit must be created,
                         // based on the values in the fields of the dialog, and then returned
                         // upon closing the dialog.
                         // If the mode was INFO, nothing is returned (null), since no changes have been made.
@@ -232,11 +234,14 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
                             int numberOfUnits = Integer.parseInt(this.numberOfUnits.getText());
                             UnitFactory unitFactory = new UnitFactory();
                             Unit unit = null;
+                            if(unitType.getSelectionModel().isEmpty()){
+                                throw new InvalidParameterException();
+                            }
                             try {
                                 unitFactory.addUnit(issueNo, this.title.getText(), this.unitType.getSelectionModel().getSelectedItem(),numberOfUnits);
                                 result = unitFactory.retrieveAllunits();
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                throw new InvalidParameterException();
                             }
 
                         } else if (mode == Mode.EDIT) {
@@ -245,6 +250,14 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
                             ArrayList<Unit> unitlist =new ArrayList<>();
                             unitlist.add(existingArmyUnit);
                             result = unitlist;
+                        }
+
+                        } catch (InvalidParameterException | NumberFormatException e){
+                            Alert alert = new Alert(Alert.AlertType.WARNING);
+                            alert.setTitle("Empty Fields Error");
+                            alert.setHeaderText("Some fields are empty");
+                            alert.setContentText("Please Fill the Name, Health, Unit type and amount of units, fields");
+                            alert.showAndWait();
                         }
                     }
                     return result;

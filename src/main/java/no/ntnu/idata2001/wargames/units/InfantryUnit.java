@@ -1,4 +1,4 @@
-package no.ntnu.idata2001.wargames.model;
+package no.ntnu.idata2001.wargames.units;
 
 /**
  * represents an infantry unit.
@@ -43,7 +43,6 @@ public class InfantryUnit extends Unit {
     public int getAttackBonus(boolean editable) {
         int attackBonus = 0;
         attackBonus = this.attackBonus + 2;
-        if (attacks == 0) {attackBonus = attackBonus + 4;}
         return attackBonus;
     }
 

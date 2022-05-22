@@ -1,4 +1,4 @@
-package no.ntnu.idata2001.wargames.model;
+package no.ntnu.idata2001.wargames.units;
 
 /**
  * Represents a range unit based on unit.

@@ -1,5 +1,7 @@
 package no.ntnu.idata2001.wargames.model;
 
+import no.ntnu.idata2001.wargames.units.Unit;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,20 +47,16 @@ public class Battle implements Serializable{
         {
             if (isArmyOneAttacker.nextBoolean()) {
                 attacker = armyOne;
-                System.out.println("attacker is armyOne");
                 defender = armyTwo;
             }
             else {
                 attacker = armyTwo;
-                System.out.println("attacker is armyTwo");
                 defender = armyOne;
             }
 
             Unit defendingUnit = defender.getRandom();
-            System.out.println("defender = " + defendingUnit.getName());
             Unit attackingUnit = attacker.getRandom();
             attackingUnit.attack(defendingUnit);
-            System.out.println("attacker = " + attackingUnit.getName());
 
             if (defendingUnit.getHealth() < 1){
                 defender.remove((defendingUnit));

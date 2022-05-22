@@ -32,7 +32,7 @@ public class FileController {
         try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("Battle.bin"))){
             objectOutputStream.writeObject(battle);
         } catch (IOException e){
-            System.out.println("ObjectInputStream could not write the fileData");
+            throw new IOException("could not write to file");
         }
     }
 
@@ -64,17 +64,23 @@ public class FileController {
                 Object object= objectInputStream.readObject();
                 if(object.getClass().getSimpleName().equals("Battle")){
                 battle = (Battle) object;
+                    if(battle.getArmyOne() == null){
+                        throw new IOException("ArmyOne file is corrupted");
+                    }
+                    if(battle.getArmyTwo() == null){
+                        throw new IOException("ArmyTwo file is corrupted");
+                    }
 
                 } else {
-                    throw new IllegalArgumentException("File is not Readable - " + object.getClass().getSimpleName());
+                    throw new ClassNotFoundException("File is not Readable - the class in file is wrong - " + object.getClass().getSimpleName());
                 }
 
             } catch (IOException | ClassNotFoundException e){
-                battle = newBattle();
+                throw new IOException("File Corrupted");
             }
 
         } catch (IOException e) {
-            battle = newBattle();
+            throw new IOException(e.getMessage());
         }
         return battle;
     }

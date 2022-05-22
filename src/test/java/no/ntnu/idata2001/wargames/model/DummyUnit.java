@@ -1,5 +1,7 @@
 package no.ntnu.idata2001.wargames.model;
 
+import no.ntnu.idata2001.wargames.units.Unit;
+
 /**
  * todo comment here
  *

@@ -2,10 +2,8 @@ package no.ntnu.idata2001.wargames.controller;
 
 import no.ntnu.idata2001.wargames.controllers.CSVController;
 import no.ntnu.idata2001.wargames.model.Army;
-import no.ntnu.idata2001.wargames.model.CavalryUnit;
+import no.ntnu.idata2001.wargames.units.CavalryUnit;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

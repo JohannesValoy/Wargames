@@ -1,10 +1,10 @@
 package no.ntnu.idata2001.wargames.model;
 
 import no.ntnu.idata2001.wargames.factory.UnitFactory;
+import no.ntnu.idata2001.wargames.units.Unit;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -1,5 +1,6 @@
 package no.ntnu.idata2001.wargames.model;
 
+import no.ntnu.idata2001.wargames.units.RangedUnit;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

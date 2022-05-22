@@ -1,6 +1,6 @@
 package no.ntnu.idata2001.wargames.factory;
 
-import no.ntnu.idata2001.wargames.model.*;
+import no.ntnu.idata2001.wargames.units.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class UnitFactory {
      * @param health a int
      * @param name a {@link java.lang.String} object
      * @param unitType a {@link java.lang.String} object
-     * @param n a int
+     * @param n as int.
      * @throws java.io.IOException
      */
     public void addUnit(int health, String name, String unitType, int n) throws IOException {
@@ -63,7 +63,7 @@ public class UnitFactory {
                 i++;
             }
         } else {
-            throw new IllegalArgumentException("amount of units has to be a positive integer");
+            throw new IllegalArgumentException("Amount of units has to be a positive integer");
         }
 
     }
