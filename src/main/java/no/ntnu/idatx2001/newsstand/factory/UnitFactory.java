@@ -1,4 +1,6 @@
-package no.ntnu.idatx2001.newsstand.model;
+package no.ntnu.idatx2001.newsstand.factory;
+
+import no.ntnu.idatx2001.newsstand.model.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
