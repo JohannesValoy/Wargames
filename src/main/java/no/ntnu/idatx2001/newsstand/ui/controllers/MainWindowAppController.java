@@ -38,6 +38,12 @@ import java.util.logging.Logger;
  */
 public class MainWindowAppController implements Initializable {
 
+  public Label numberOfUnitsArmyTwoLabel;
+  public Label fileArmyTwoLabel;
+  public Label armyTwoNameLabel;
+  public Label numberOfUnitsArmyOneLabel;
+  public Label fileArmyOneLabel;
+  public Label armyOneNameLabel;
   private Battle battle;
   private ObservableList<Unit> observableArmyOne;
   private ObservableList<Unit> observableArmyTwo;
@@ -101,10 +107,14 @@ public class MainWindowAppController implements Initializable {
     this.observableArmyOne =
         FXCollections.observableArrayList(this.battle.getArmyOne().getAllUnits());
     this.armyOneTableView.setItems(this.observableArmyOne);
+    //Updates parameters:
+    updateObservableArmyOne();
 
     this.observableArmyTwo =
             FXCollections.observableArrayList(this.battle.getArmyTwo().getAllUnits());
     this.armyTwoTableView.setItems(this.observableArmyTwo);
+    //Updates parameters:
+    updateObservableArmyTwo();
   }
 
   /**
@@ -256,8 +266,6 @@ public class MainWindowAppController implements Initializable {
 
       this.updateObservableArmyOne();
       this.updateObservableArmyTwo();
-      army.getAllUnits().stream().forEach(unit -> System.out.println(unit.getResistBonus()));
-      army.getAllUnits().stream().forEach(unit -> System.out.println(unit.getAttackBonus()));
       army = battle.getArmyTwo();
     }
   }
@@ -401,9 +409,9 @@ public class MainWindowAppController implements Initializable {
     DirectoryChooser directoryChooser = new DirectoryChooser();
     directoryChooser.setTitle("Open Resource File Army One");
     File selectedFolder = directoryChooser.showDialog(null);
-    SaveToFileRefactored saveToFileRefactored = new SaveToFileRefactored();
-    saveToFileRefactored.saveArmy(battle.getArmyOne(), 0, selectedFolder.getAbsolutePath() + "\\ArmyOne.csv");
-    saveToFileRefactored.saveArmy(battle.getArmyTwo(), 0, selectedFolder.getAbsolutePath() + "\\ArmyTwo.csv");
+    CSVController CSVController = new CSVController();
+    CSVController.saveArmy(battle.getArmyOne(), 0, selectedFolder.getAbsolutePath() + "\\ArmyOne.csv");
+    CSVController.saveArmy(battle.getArmyTwo(), 0, selectedFolder.getAbsolutePath() + "\\ArmyTwo.csv");
 
   }
   /**
@@ -415,10 +423,13 @@ public class MainWindowAppController implements Initializable {
   public void open() {
     File fileArmyOne = openDialog();
     File fileArmyTwo = openDialog();
-    SaveToFileRefactored saveToFileRefactored = new SaveToFileRefactored();
+    CSVController csvController = new CSVController();
+    csvController.retrieveArmy(fileArmyOne.getAbsolutePath()).getName();
     this.battle = new Battle(
-            saveToFileRefactored.retrieveArmy(fileArmyOne.getAbsolutePath()),
-            saveToFileRefactored.retrieveArmy(fileArmyTwo.getAbsolutePath()));
+            csvController.retrieveArmy(fileArmyOne.getAbsolutePath()),
+            csvController.retrieveArmy(fileArmyTwo.getAbsolutePath()));
+    fileArmyOneLabel.setText(fileArmyOne.getName());
+    fileArmyTwoLabel.setText(fileArmyTwo.getName());
     this.updateObservableArmyOne();
     this.updateObservableArmyTwo();
   }
@@ -437,10 +448,14 @@ public class MainWindowAppController implements Initializable {
    */
   private void updateObservableArmyOne() {
     this.observableArmyOne.setAll(this.battle.getArmyOne().getAllUnits());
+      numberOfUnitsArmyOneLabel.setText(battle.getArmyOne().getAllUnits().size() + "");
+      armyOneNameLabel.setText(battle.getArmyOne().getName());
   }
 
   private void updateObservableArmyTwo() {
     this.observableArmyTwo.setAll(this.battle.getArmyTwo().getAllUnits());
+      numberOfUnitsArmyTwoLabel.setText(battle.getArmyTwo().getAllUnits().size() + "");
+      armyTwoNameLabel.setText(battle.getArmyTwo().getName());
   }
 
   public void selectedArmyTwo() {

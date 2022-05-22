@@ -32,7 +32,6 @@ public class Army implements Serializable {
      */
 
     public Army(String name) {
-
         this.name = name;
         this.units = new ArrayList<>();
     }

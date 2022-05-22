@@ -13,7 +13,7 @@ class RangeUnitTest {
     @Test
     void getAttackBonus() {
         RangedUnit unit = new RangedUnit("name", 2, 3, 4);
-        assertEquals(3, unit.getAttackBonus());
+        assertEquals(3, unit.getAttackBonus(true));
     }
 
     /**

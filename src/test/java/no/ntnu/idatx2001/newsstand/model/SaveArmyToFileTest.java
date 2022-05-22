@@ -1,8 +1,8 @@
 package no.ntnu.idatx2001.newsstand.model;
 
+import no.ntnu.idatx2001.newsstand.ui.controllers.CSVController;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,7 +11,7 @@ class SaveArmyToFileTest {
 
     @Test
     void makeFile() throws Exception {
-        SaveToFileRefactored savingArmy = new SaveToFileRefactored();
+        CSVController savingArmy = new CSVController();
         Army army = new Army("Army");
         CavalryUnit unit = new CavalryUnit("Name", 1);
         army.add(unit);

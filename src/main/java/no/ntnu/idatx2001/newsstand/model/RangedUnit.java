@@ -38,7 +38,7 @@ public class RangedUnit extends Unit{
      * @return attackBonus as int
      */
     @Override
-    public int getAttackBonus() {;
+    public int getAttackBonus(boolean editable) {;
         return attackBonus + 3;
     }
 

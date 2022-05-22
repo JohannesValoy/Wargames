@@ -1,5 +1,6 @@
 package no.ntnu.idatx2001.newsstand.model;
 
+import no.ntnu.idatx2001.newsstand.ui.controllers.FileController;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;

@@ -49,9 +49,11 @@ public abstract class Unit implements Serializable{
      * (attack + attackBonus) - (armor + resistBonus)
      * @param opponent as Army
      */
-    public void attack(Unit opponent)
-    {opponent.health = opponent.health - (this.attack + this.attackBonus)
-            + (opponent.armor + opponent.resistBonus);}
+    public void attack(Unit opponent) {
+        System.out.print(opponent.getHealth() + " - ");
+        opponent.health = opponent.health - (this.getAttack() + this.getAttackBonus(true))
+            + (opponent.getArmor() + opponent.getResistBonus());
+        System.out.println("(" + this.getAttack() + " bonus " + this.getAttackBonus(true) + ")" + " + (opponent" + opponent.getArmor() + " resbonus" + opponent.getResistBonus() + ") = " + opponent.getHealth());}
 
     //TODO: check if supposed to have this function (related to the terrain function)
     public void setName(String name){
@@ -115,7 +117,7 @@ public abstract class Unit implements Serializable{
      * @return attackBonus as int
      */
 
-    public abstract int getAttackBonus();
+    public abstract int getAttackBonus(boolean editable);
 
     /**
      * Returns resistBonus as int.

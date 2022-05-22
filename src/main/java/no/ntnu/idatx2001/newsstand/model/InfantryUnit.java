@@ -36,7 +36,7 @@ public class InfantryUnit extends Unit {
      */
 
     @Override
-    public int getAttackBonus() {
+    public int getAttackBonus(boolean editable) {
         int attackBonus = 0;
         attackBonus = this.attackBonus + 2;
         if (attacks == 0) {attackBonus = attackBonus + 4;}

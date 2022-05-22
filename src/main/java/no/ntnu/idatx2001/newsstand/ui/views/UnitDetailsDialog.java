@@ -3,7 +3,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import no.ntnu.idatx2001.newsstand.model.Unit;
-import no.ntnu.idatx2001.newsstand.model.UnitFactory;
+import no.ntnu.idatx2001.newsstand.factory.UnitFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
      * The GUI-components holding the Unit information.
      */
     private TextField title;
-    private TextField issueNoTxt;
+    private TextField healthNumber;
     private ChoiceBox<String> unitType;
     private TextField numberOfUnits;
     private Label attackBonus;
@@ -106,8 +106,8 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
 
         this.title = new TextField();
         this.title.setPromptText("Name");
-        this.issueNoTxt = new TextField();
-        this.issueNoTxt.setPromptText("Health");
+        this.healthNumber = new TextField();
+        this.healthNumber.setPromptText("Health");
         this.unitType = new ChoiceBox<>();
         this.unitType.setValue("Unit Type");
         this.numberOfUnits = new TextField();
@@ -130,21 +130,25 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
         // of the TextField prior to the user typing in a new character, while the parameter
         // newValue holds the result that will be displayed in the TextField if nothing is
         // wrong.
-        this.issueNoTxt.textProperty().addListener((observable, oldValue, newValue) -> {
+        this.healthNumber.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 if (newValue.length() > 0) {
+                    if(newValue.length() < 4){
                         Integer.parseInt(newValue);
+                    }else {
+                        this.healthNumber.setText(oldValue);
+                    }
                 }
             } catch (NumberFormatException e) {
                 // The user have entered a non-integer character, hence just keep the
                 // oldValue and ignore the newValue.
-                this.issueNoTxt.setText(oldValue);
+                this.healthNumber.setText(oldValue);
             }
         });
         this.numberOfUnits.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 if (newValue.length() > 0) {
-                    if(newValue.length() < 5){
+                    if(newValue.length() < 4){
                         Integer.parseInt(newValue);
                     }else {
                         this.numberOfUnits.setText(oldValue);
@@ -161,19 +165,19 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
         // Fill inn data from the provided Unit, if not null.
         if ((mode == Mode.EDIT) || (mode == Mode.INFO)) {
             title.setText(existingArmyUnit.getName());
-            issueNoTxt.setText(Integer.toString(existingArmyUnit.getHealth()));
+            healthNumber.setText(Integer.toString(existingArmyUnit.getHealth()));
             unitType.setValue(existingArmyUnit.getClass().getSimpleName());
             unitType.setDisable(true);
             numberOfUnits.setDisable(true);
             this.attackBonus.setDisable(true);
             this.resistBonus.setDisable(true);
 
-            this.attackBonus.setText(existingArmyUnit.getAttackBonus() + "");
+            this.attackBonus.setText(existingArmyUnit.getAttackBonus(false) + "");
             this.resistBonus.setText(existingArmyUnit.getResistBonus() + "");
             // Set to non-editable if Mode.INFO
             if (mode == Mode.INFO) {
                 title.setEditable(false);
-                issueNoTxt.setEditable(false);
+                healthNumber.setEditable(false);
                 grid.add(new Label("Attack-bonus:"), 3, 0);
                 grid.add(attackBonus, 4, 0);
                 grid.add(new Label("Resist-bonus:"), 3, 1);
@@ -186,7 +190,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
         grid.add(new Label("Name:"), 0, 0);
         grid.add(title, 1, 0);
         grid.add(new Label("Health:"), 0, 1);
-        grid.add(issueNoTxt, 1, 1);
+        grid.add(healthNumber, 1, 1);
         grid.add(new Label("Unit Type:"), 0, 2);
         this.unitType.getItems().addAll("CavalryUnit", "CommanderUnit", "InfantryUnit", "RangedUnit");
         grid.add(unitType, 1, 2);
@@ -212,7 +216,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
                 (ButtonType button) -> {
                     List<Unit> result = null;
                     if (button == ButtonType.OK) {
-                        int issueNo = Integer.parseInt(this.issueNoTxt.getText());
+                        int issueNo = Integer.parseInt(this.healthNumber.getText());
 
 
                         // Note how the mode of the dialog effects how to deal with the result.

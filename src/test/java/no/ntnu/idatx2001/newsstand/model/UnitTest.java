@@ -13,7 +13,7 @@ class UnitTest {
     @Test
     void getAttackBonus() {
         Unit Unit = new DummyUnit("Unit",1,1,1);
-        assertEquals(0, Unit.getAttackBonus());
+        assertEquals(0, Unit.getAttackBonus(true));
     }
 
     /**

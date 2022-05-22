@@ -11,9 +11,11 @@ module no.ntnu.idatx2001.newsstand {
 
     opens no.ntnu.idatx2001.newsstand.model;
     opens no.ntnu.idatx2001.newsstand.ui.views to javafx.graphics, javafx.fxml;
-    opens no.ntnu.idatx2001.newsstand.ui.controllers to javafx.fxml;
-    exports no.ntnu.idatx2001.newsstand.ui.controllers to javafx.fxml;
     exports no.ntnu.idatx2001.newsstand.model;
     exports no.ntnu.idatx2001.newsstand;
     exports no.ntnu.idatx2001.newsstand.ui.views;
+    exports no.ntnu.idatx2001.newsstand.ui.controllers;
+    opens no.ntnu.idatx2001.newsstand.ui.controllers;
+    exports no.ntnu.idatx2001.newsstand.factory;
+    opens no.ntnu.idatx2001.newsstand.factory;
 }

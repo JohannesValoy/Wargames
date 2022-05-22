@@ -13,7 +13,7 @@ class InfantryUnitTest {
     @Test
     void getAttackBonus() {
         InfantryUnit infantryUnit = new InfantryUnit("Unit",1,1,1);
-        assertEquals(6, infantryUnit.getAttackBonus());
+        assertEquals(6, infantryUnit.getAttackBonus(true));
     }
 
     /**

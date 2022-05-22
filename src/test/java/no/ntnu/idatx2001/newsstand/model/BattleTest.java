@@ -1,5 +1,6 @@
 package no.ntnu.idatx2001.newsstand.model;
 
+import no.ntnu.idatx2001.newsstand.factory.UnitFactory;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

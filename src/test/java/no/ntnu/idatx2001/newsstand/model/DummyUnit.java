@@ -14,7 +14,7 @@ public class DummyUnit extends Unit {
     }
 
     @Override
-    public int getAttackBonus() {
+    public int getAttackBonus(boolean editabel) {
         return 0;
     }
 

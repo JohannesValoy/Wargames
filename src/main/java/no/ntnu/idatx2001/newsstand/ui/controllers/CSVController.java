@@ -1,4 +1,8 @@
-package no.ntnu.idatx2001.newsstand.model;
+package no.ntnu.idatx2001.newsstand.ui.controllers;
+
+import no.ntnu.idatx2001.newsstand.model.Army;
+import no.ntnu.idatx2001.newsstand.model.Unit;
+import no.ntnu.idatx2001.newsstand.factory.UnitFactory;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -6,12 +10,12 @@ import java.nio.file.Files;
 /**
  * Responsible for saving and retrieving army in a .csv file. Throws IOException.
  */
-public class SaveToFileRefactored {
+public class CSVController {
 
     /**
      * Empty constructor.
      */
-    public SaveToFileRefactored(){
+    public CSVController(){
         // Empty because all the data needed are requested in the methode parameters.
     }
 
@@ -51,6 +55,7 @@ public class SaveToFileRefactored {
             try (BufferedReader reader = new BufferedReader(new FileReader(filename)))
             {
                 String armyName = reader.readLine();
+                System.out.println(armyName);
                 army = new Army(armyName);
 
                 while ((line = reader.readLine()) != null) {
