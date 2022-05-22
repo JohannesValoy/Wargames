@@ -22,7 +22,7 @@ public class DummyUnit extends Unit {
 
     /** {@inheritDoc} */
     @Override
-    public int getAttackBonus(boolean editabel) {
+    public int getAttackBonus(boolean editable) {
         return 0;
     }
 

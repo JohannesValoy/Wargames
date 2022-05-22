@@ -29,13 +29,13 @@ class ArmyTest {
         Army army = new Army("name");
         Unit badUnit = null;
         Unit unit = new RangedUnit("name", 1);
+        army.add(unit);
+        army.add(badUnit);
+
         boolean badUnitAccepted = true;
         try {
             badUnit = new RangedUnit("name", -1);
         } catch (IllegalArgumentException e){badUnitAccepted = false;}
-        army.add(unit);
-        army.add(badUnit);
-        //todo fix this
         assertFalse(badUnitAccepted);
         assertTrue(army.hasUnits());
 
@@ -51,10 +51,12 @@ class ArmyTest {
         Unit unit = new RangedUnit("name", 1);
         Unit unit2 = new RangedUnit("name", 1);
         ArrayList<Unit> list = new ArrayList<>();
+
         army.add(unit);
         list.add(unit);
         list.add(unit2);
         army.addAll(list);
+
         assertEquals(2,army.getAllUnits().size());
     }
 
@@ -66,8 +68,10 @@ class ArmyTest {
     void remove() throws Exception {
         Army army = new Army("name");
         Unit unit = new RangedUnit("name", 1);
+
         army.add(unit);
         army.remove(unit);
+
         assertFalse(army.hasUnits());
     }
 
@@ -80,8 +84,10 @@ class ArmyTest {
         Army army = new Army("name");
         Unit unit = new RangedUnit("name", 1);
         Unit unit2 = new RangedUnit("name2", 2);
+
         army.add(unit);
         army.add(unit2);
+
         assertEquals(2,army.getAllUnits().size());
     }
 
@@ -92,7 +98,9 @@ class ArmyTest {
     void getRandom() throws Exception {
         Army army = new Army("name");
         Unit unit = new RangedUnit("name", 1);
+
         army.add(unit);
+
         assertEquals(unit,army.getRandom());
 
     }
@@ -106,7 +114,9 @@ class ArmyTest {
 
         Army army = new Army("name");
         Unit unit = new RangedUnit("name", 1);
+
         army.add(unit);
+
         assertEquals("name\nRangedUnit,name,1\n",army.toString());
     }
 
@@ -118,11 +128,12 @@ class ArmyTest {
     void testEquals() {
         Army army = new Army("name");
         Army army2 = new Army("name");
+
         assertTrue(army.equals(army2));
     }
 
     @Test
-    void simulate() throws Exception {
+    void getUnitsByType() throws Exception {
         CommanderUnit unit1 = new CommanderUnit("name", 2);
         CommanderUnit unit2 = new CommanderUnit("name", 2);
         CavalryUnit unit3 = new CavalryUnit("name", 2);

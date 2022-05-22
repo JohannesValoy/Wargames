@@ -73,7 +73,7 @@ public class CSVController {
                     i++;
                 }
             }
-            catch (IOException e){e.printStackTrace();}
+            catch (IOException e){army = new Army("ArmyOne");}
         for (Unit unit : unitFactory.retrieveAllunits()) {
             assert army != null;
             army.add(unit);

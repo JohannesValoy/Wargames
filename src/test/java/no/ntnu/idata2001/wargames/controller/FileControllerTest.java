@@ -16,12 +16,13 @@ class FileControllerTest {
      */
     @Test
     public void saveBattle() throws IOException {
-        Battle battle = new Battle(new Army("armyOne"), new Army("armyTwo"));
         FileController fileController = new FileController();
-        fileController.saveBattle(battle);
-        assertEquals(battle.getClass(), fileController.retrieveBattle().getClass());
-
+        Battle battle = new Battle(new Army("armyOne"), new Army("armyTwo"));
         Army army = new Army("armyOne");
+
+        fileController.saveBattle(battle);
+
+        assertEquals(battle.getClass(), fileController.retrieveBattle().getClass());
         boolean wrongClassAccepted = true;
         try {
             fileController.saveBattle(army);
