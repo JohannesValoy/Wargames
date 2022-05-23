@@ -1,6 +1,6 @@
-package no.ntnu.idata2001.wargames.model;
+package no.ntnu.idata.wargames.logic.warsimulation;
 
-import no.ntnu.idata2001.wargames.units.Unit;
+import no.ntnu.idata.wargames.model.Unit;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.Random;
 public class Battle implements Serializable{
     private Army armyOne;
     private Army armyTwo;
-    private final Random isArmyOneAttacker;
+    private Random isArmyOneAttacker;
 
     /**
      * Creates instance of Battle
@@ -74,6 +74,9 @@ public class Battle implements Serializable{
 
     }
 
+    public void newRandom(){
+        this.isArmyOneAttacker = new Random();
+    }
     /**
      * {@inheritDoc}
      *

@@ -1,4 +1,4 @@
-package no.ntnu.idata2001.wargames.units;
+package no.ntnu.idata.wargames.model;
 
 /**
  * Represents a range unit based on unit.
@@ -42,8 +42,8 @@ public class RangedUnit extends Unit{
      * returns attackBonus as int.
      */
     @Override
-    public int getAttackBonus(boolean editable) {;
-        return attackBonus + 3;
+    public int getAttackBonus(boolean editable) {
+        return this.attackBonus + 3;
     }
 
     /**

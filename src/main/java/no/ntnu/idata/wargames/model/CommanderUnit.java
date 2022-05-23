@@ -1,4 +1,4 @@
-package no.ntnu.idata2001.wargames.units;
+package no.ntnu.idata.wargames.model;
 
 /**
  * custom version of CavalryUnit.

@@ -1,4 +1,4 @@
-package no.ntnu.idata2001.wargames.units;
+package no.ntnu.idata.wargames.model;
 
 import java.io.Serializable;
 
@@ -53,8 +53,11 @@ public abstract class Unit implements Serializable{
      * @param opponent as Army
      */
     public void attack(Unit opponent) {
-        opponent.health = opponent.health - (this.getAttack() + this.getAttackBonus(true))
-            + (opponent.getArmor() + opponent.getResistBonus());}
+        int currentHealth;
+        currentHealth = opponent.health - (this.attack + this.getAttackBonus(true)) + (opponent.armor + opponent.getResistBonus());
+        if(currentHealth < opponent.health){
+        opponent.setHealth(currentHealth);}
+    }
 
     //TODO: check if supposed to have this function (related to the terrain function)
     /**

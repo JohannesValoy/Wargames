@@ -109,7 +109,7 @@ public class MainWindowAppController implements Initializable {
       FileController fileController = new FileController();
       this.battle = fileController.retrieveBattle();
     } catch (IOException e) {
-      showCustomDialog("Memory File", "Memory-" + e.getMessage(), "Both armies will be reset");
+      showCustomDialog("Internal Error", "Internal Error - Memory-" + e.getMessage(), "Both armies will be reset");
       this.battle = new Battle(new Army("ArmyOne"), new Army("ArmyTwo"));
     }
 
@@ -143,13 +143,13 @@ public class MainWindowAppController implements Initializable {
 
     // Populate the armyOne-TableView by data from the battle-Class.
     this.observableArmyOne =
-            FXCollections.observableArrayList(this.armyOne.getAllUnits());
+            FXCollections.observableArrayList(this.battle.getArmyOne().getAllUnits());
     this.armyOneTableView.setItems(this.observableArmyOne);
     //Updates parameters:
 
     // Populate the armyTwo-TableView by data from the battle-Class.
     this.observableArmyTwo =
-            FXCollections.observableArrayList(this.armyTwo.getAllUnits());
+            FXCollections.observableArrayList(this.battle.getArmyTwo().getAllUnits());
     this.armyTwoTableView.setItems(this.observableArmyTwo);
     //Updates parameters:
     updateObservables();
@@ -234,7 +234,7 @@ public class MainWindowAppController implements Initializable {
    */
   @FXML
   public void simulate(){
-    if(armyOne.hasUnits() && armyTwo.hasUnits()){
+    if(battle.getArmyOne().hasUnits() && battle.getArmyTwo().hasUnits()){
       try{
         save();
       } catch (IOException e){
