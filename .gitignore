@@ -1,4 +1,6 @@
+out/
 .idea/
+.idea_modules/
 *.iml
-*.iw
-/target/
+*.ipr
+*.iws

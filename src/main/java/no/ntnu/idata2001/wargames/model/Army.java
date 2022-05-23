@@ -65,6 +65,7 @@ public class Army implements Serializable {
      * @param unit as Unit
      */
     public void add(Unit unit) {
+
         this.units.add(unit);
     }
 
@@ -83,7 +84,11 @@ public class Army implements Serializable {
      * @param unit as unit
      */
     public void remove(Unit unit) {
+        if(this.units.contains(unit)){
         this.units.remove(unit);
+        } else {
+            throw new NullPointerException();
+        }
     }
 
     /**

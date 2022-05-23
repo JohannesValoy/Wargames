@@ -27,12 +27,14 @@ class ArmyTest {
      */
     @Test
     void add() throws Exception {
+        //Positive test
         Army army = new Army("name");
         Unit badUnit = null;
         Unit unit = new RangedUnit("name", 1);
         army.add(unit);
         army.add(badUnit);
 
+        //Negative test
         boolean badUnitAccepted = true;
         try {
             badUnit = new RangedUnit("name", -1);
@@ -69,11 +71,21 @@ class ArmyTest {
     void remove() throws Exception {
         Army army = new Army("name");
         Unit unit = new RangedUnit("name", 1);
+        boolean badUnitIsCaught = false;
 
         army.add(unit);
         army.remove(unit);
 
         assertFalse(army.hasUnits());
+
+        //Negative test
+        try {
+            army.remove(unit);
+        } catch (Exception e){
+            badUnitIsCaught = true;
+        }
+        assertTrue(badUnitIsCaught);
+
     }
 
     /**

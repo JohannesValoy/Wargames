@@ -1,11 +1,13 @@
 package no.ntnu.idata2001.wargames.model;
 
 import no.ntnu.idata2001.wargames.factory.UnitFactory;
+import no.ntnu.idata2001.wargames.units.InfantryUnit;
 import no.ntnu.idata2001.wargames.units.Unit;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -15,7 +17,7 @@ class BattleTest {
      * <p>getName.</p>
      */
     @Test
-    public void getName() {
+    void getArmyOneAndTwo() {
         Army armyOne = new Army("ArmyOne");
         Army armyTwo = new Army("ArmyTwo");
         Battle battle = new Battle(armyOne,armyTwo);
@@ -30,16 +32,28 @@ class BattleTest {
      * @throws java.io.IOException if any.
      */
     @Test
-    public void getInfantryUnits() throws IOException {
+    void getInfantryUnits(){
         Battle battle = new Battle(new Army("armyOne"), new Army("armyTwo"));
         UnitFactory unitFactory = new UnitFactory();
         List<Unit> infantryUnitList;
 
-        unitFactory.addUnit(1, "name", "InfantryUnit",5);
+        try {
+            unitFactory.addUnit(1, "name", "InfantryUnit", 5);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
         infantryUnitList = unitFactory.retrieveAllunits();
         battle.getArmyOne().addAll(infantryUnitList);
 
         assertEquals(infantryUnitList, battle.getInfantryUnits());
+
+        //Negative test
+        for(Unit infantryUnit: battle.getArmyOne().getInfantryUnits()){
+            battle.getArmyOne().remove(infantryUnit);
+        }
+        assertEquals(infantryUnitList, battle.getInfantryUnits());
+
     }
 
     /**
@@ -48,7 +62,7 @@ class BattleTest {
      * @throws java.io.IOException if any.
      */
     @Test
-    public void getCavalryUnits() throws IOException {
+    void getCavalryUnits() throws IOException {
         Battle battle = new Battle(new Army("armyOne"), new Army("armyTwo"));
         UnitFactory unitFactory = new UnitFactory();
         List<Unit> cavalryUnitList;
@@ -58,6 +72,13 @@ class BattleTest {
         battle.getArmyOne().addAll(cavalryUnitList);
 
         assertEquals(cavalryUnitList, battle.getCavalryUnits());
+
+        //Negative test
+        for(Unit cavalryUnit: battle.getArmyOne().getCavalryUnits()){
+            battle.getArmyOne().remove(cavalryUnit);
+        }
+        assertEquals(cavalryUnitList, battle.getInfantryUnits());
+
     }
 
     /**
@@ -66,7 +87,7 @@ class BattleTest {
      * @throws java.io.IOException if any.
      */
     @Test
-    public void getRangedUnits() throws IOException {
+    void getRangedUnits() throws IOException {
         Battle battle = new Battle(new Army("armyOne"), new Army("armyTwo"));
         UnitFactory unitFactory = new UnitFactory();
         List<Unit> rangedUnitList;
@@ -76,5 +97,12 @@ class BattleTest {
         battle.getArmyOne().addAll(rangedUnitList);
 
         assertEquals(rangedUnitList, battle.getRangeUnits());
+
+        //Negative test
+        for(Unit rangedUnit: battle.getArmyOne().getRangedUnits()){
+            battle.getArmyOne().remove(rangedUnit);
+        }
+        assertEquals(rangedUnitList, battle.getInfantryUnits());
+
     }
 }

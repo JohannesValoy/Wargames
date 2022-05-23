@@ -1,7 +1,0 @@
-module:no.ntnu.idatx2001.newsstand
-no.ntnu.idata2001.wargames
-no.ntnu.idata2001.wargames.controllers
-no.ntnu.idata2001.wargames.factory
-no.ntnu.idata2001.wargames.model
-no.ntnu.idata2001.wargames.ui.controllers
-no.ntnu.idata2001.wargames.ui.views
