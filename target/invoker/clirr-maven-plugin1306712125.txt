@@ -1,0 +1,34 @@
+Invoking Maven for the goals: [org.codehaus.mojo:clirr-maven-plugin:2.2.2:check] with properties={comparisonVersion=(,1.0-SNAPSHOT), failOnError=false, textOutputFile=C:\Users\johan\OneDrive - NTNU\IDATA 2001\livecoding\WarGames\target\clirr1225628900.txt}
+
+M2_HOME=C:\Program Files\JetBrains\IntelliJ IDEA 2021.3.2\plugins\maven\lib\maven3
+MAVEN_OPTS=null
+JAVA_HOME=C:\Program Files\Java\jdk-17
+JAVA_OPTS=null
+
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< no.ntnu.idata2001:wargames >---------------------
+[INFO] Building wargames 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> clirr-maven-plugin:2.2.2:check (default-cli) > compile @ wargames >>>
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ wargames ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ wargames ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] <<< clirr-maven-plugin:2.2.2:check (default-cli) < compile @ wargames <<<
+[INFO] 
+[INFO] 
+[INFO] --- clirr-maven-plugin:2.2.2:check (default-cli) @ wargames ---
+[INFO] Unable to find a previous version of the project in the repository
+[INFO] Not generating Clirr report as there is no previous version of the library to compare against
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.133 s
+[INFO] Finished at: 2022-05-22T16:25:26+02:00
+[INFO] ------------------------------------------------------------------------

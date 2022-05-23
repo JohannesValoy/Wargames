@@ -51,7 +51,6 @@ public class MainWindowAppController implements Initializable {
   private ObservableList<Unit> observableArmyOne;
   private ObservableList<Unit> observableArmyTwo;
   private String terrain;
-  private final Logger logger = Logger.getLogger(getClass().toString());
 
   @FXML
   private Label numberOfUnitsArmyTwoLabel;
@@ -97,7 +96,7 @@ public class MainWindowAppController implements Initializable {
       FileController fileController = new FileController();
       this.battle = fileController.retrieveBattle();
     } catch (IOException e) {
-      showErrorDialog("Memory File", "Memory-" + e.getMessage(), "Both armies will be empty");
+      showErrorDialog("Memory File", "Memory-" + e.getMessage(), "Both armies will be reset");
       this.battle = new Battle(new Army("ArmyOne"), new Army("ArmyTwo"));
     }
 
@@ -169,7 +168,7 @@ public class MainWindowAppController implements Initializable {
       } else {showTooManyUnitsDialog();}
         this.updateObservableArmyOne();
     }
-    terrainChoiceCase();
+    terrainController();
     } else {showTooManyUnitsDialog();}
   }
 
@@ -203,7 +202,7 @@ public class MainWindowAppController implements Initializable {
         } else {showTooManyUnitsDialog();}
         this.updateObservableArmyTwo();
       }
-      terrainChoiceCase();
+      terrainController();
     } else {showTooManyUnitsDialog();}
   }
 
@@ -242,18 +241,20 @@ public class MainWindowAppController implements Initializable {
   /**
    * If the terrain is chosen, it starts the simulation.
    * If the terrain is null, it will not do anything.
-   *
-   * @throws java.io.IOException if any.
    */
   @FXML
-  public void simulate() throws IOException {
+  public void simulate(){
     if(battle.getArmyOne().hasUnits() && battle.getArmyTwo().hasUnits()){
-      save();
+      try{
+        save();
+      } catch (IOException e){
+        showErrorDialog("Error", "Error - " + e.getMessage(), "Error saving file, please export it before closing the program");
+      }
     if(terrain != null) {
       winner.setText(this.battle.simulate().getName());
       updateObservableArmyOne();
       updateObservableArmyTwo();
-    }
+    } else {chooseTerrainType();}
     } else {
       showErrorDialog("Army out of units", "Both armies needs to have units for the simulation to start",
               "Please add units to both armies or import them from .csv-file");
@@ -265,7 +266,7 @@ public class MainWindowAppController implements Initializable {
    */
   public void onHills() {
     this.terrain = "Hills";
-    terrainChoiceCase();
+    terrainController();
   }
 
   /**
@@ -273,7 +274,7 @@ public class MainWindowAppController implements Initializable {
    */
   public void onPlains() {
     this.terrain = "Plains";
-    terrainChoiceCase();
+    terrainController();
   }
 
   /**
@@ -281,16 +282,52 @@ public class MainWindowAppController implements Initializable {
    */
   public void onForest() {
     this.terrain = "Forest";
-    terrainChoiceCase();
+    terrainController();
 
   }
+
+
+  /**
+   * Displays a confirmation dialog for choosing the terrain if the user have not already chosen terrain .
+   */
+  @FXML
+  public void chooseTerrainType(){
+    if(terrain == null) {
+      Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+      alert.setTitle("Choose terrain type");
+      alert.setHeaderText("No terrain chosen");
+      alert.setContentText("Choose the terrain type, this can be changed in the <Terrain> dropdown menu");
+
+      ButtonType buttonTypeOne = new ButtonType("Forest");
+      ButtonType buttonTypeTwo = new ButtonType("Plains");
+      ButtonType buttonTypeThree = new ButtonType("Hills");
+      ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+      alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);
+
+      Optional<ButtonType> result = alert.showAndWait();
+
+      if (result.isPresent()) {
+        if (result.get() == buttonTypeOne) {
+          terrain = "Forest";
+          terrainController();
+        } else if (result.get() == buttonTypeTwo) {
+          terrain = "Plains";
+          terrainController();
+        } else if (result.get() == buttonTypeThree) {
+          terrain = "Hills";
+        }
+      }
+    }
+    simulate();
+  }
+
 
   /**
    * Adds resistBonus and attackBonus the Cavalry, Commander, Infantry and Ranged-Units in the battle-class.
    * If the set terrain is not 'Hills', 'Plains', 'Forest' or null, there will ve thrown an IllegalArgumentException to the terminal.
-   * TODO make Exception to logger.log.
    */
-  public void terrainChoiceCase() {
+  public void terrainController() {
     Army army = battle.getArmyOne();
     int i = 0;
 
@@ -310,11 +347,13 @@ public class MainWindowAppController implements Initializable {
           army.getAllUnits().stream().filter(InfantryUnit.class::isInstance).forEach(unit -> unit.addAttackBonus(5));
           army.getAllUnits().stream().filter(RangedUnit.class::isInstance).forEach(unit -> unit.addResistBonus(5));
         }
-        default -> throw new IllegalArgumentException("Terrain must either be 'Hills', 'Plains', 'Forest' or null");
+        //Error handling
+        default -> showErrorDialog("Error","Terrain must either be 'Hills', 'Plains', 'Forest' or null", "Internal Error, " + terrain + " is not available");
       }
       }
       i++;
 
+      //Updates tables
       this.updateObservableArmyOne();
       this.updateObservableArmyTwo();
       army = battle.getArmyTwo();
@@ -367,44 +406,6 @@ public class MainWindowAppController implements Initializable {
     updateObservableArmyTwo();
   }
 
-  //TODO: make this the terrainChooser.
-  /**
-   * Displays a confirmation dialog for choosing the terrain if the user have not already chosen terrain .
-   *
-   * @throws java.io.IOException if any.
-   */
-  @FXML
-  public void chooseTerrainType() throws IOException {
-    if(terrain == null) {
-      Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-      alert.setTitle("Choose terrain type");
-      alert.setHeaderText("Choose the terrain type, this can be changed in the <Terrain> dropdown menu");
-      alert.setContentText("terrain type:");
-
-      ButtonType buttonTypeOne = new ButtonType("Forest");
-      ButtonType buttonTypeTwo = new ButtonType("Plains");
-      ButtonType buttonTypeThree = new ButtonType("Hills");
-      ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-      alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);
-
-      Optional<ButtonType> result = alert.showAndWait();
-
-      if (result.isPresent()) {
-        if (result.get() == buttonTypeOne) {
-          terrain = "Forest";
-          terrainChoiceCase();
-        } else if (result.get() == buttonTypeTwo) {
-          terrain = "Plains";
-          terrainChoiceCase();
-        } else if (result.get() == buttonTypeThree) {
-          terrain = "Hills";
-        }
-      }
-    }
-    simulate();
-  }
-
   /**
    * Saves battle to Battle.bin-file using fileController. Throws IOException if writing failed.
    *
@@ -422,9 +423,14 @@ public class MainWindowAppController implements Initializable {
    * @throws java.io.IOException if any.
    */
   @FXML
-  public void exit() throws IOException {
-    FileController fileController = new FileController();
-    fileController.saveBattle(battle);
+  public void exit(){
+    try {
+      FileController fileController = new FileController();
+      fileController.saveBattle(battle);
+    } catch (IOException e){
+      showErrorDialog("Error", "Error - " + e.getMessage(), "Please save the game in a safe folder");
+      export();
+    }
     Platform.exit();
   }
 
@@ -437,7 +443,8 @@ public class MainWindowAppController implements Initializable {
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle("Information Dialog - About");
     alert.setHeaderText("Wargames");
-    alert.setContentText("An application created by\n" + "(C)Johannes Valøy\n" + "v1.0 2022-05-07");
+    alert.setContentText("A simulation of a war between two armies with four different types of units and three different terrains\n\n" +
+            "As created by " + "(C)Johannes Valøy\n" + "v1.0 2022-05-07");
 
     alert.showAndWait();
   }
@@ -446,7 +453,7 @@ public class MainWindowAppController implements Initializable {
    * Exports file as .csv-file. Shows choose- folder-dialog.
    */
   @FXML
-  public void export() throws IOException {
+  public void export(){
     DirectoryChooser directoryChooser = new DirectoryChooser();
     directoryChooser.setTitle("Open Resource File Army One");
     File selectedFolder = directoryChooser.showDialog(null);
@@ -549,7 +556,7 @@ public class MainWindowAppController implements Initializable {
    * Removes all the units in both armies.
    */
   @FXML
-  public void restart(){
+  public void empty(){
     this.battle = new Battle(new Army("ArmyOne"), new Army("ArmyTwo"));
     updateObservableArmyOne();
     updateObservableArmyTwo();

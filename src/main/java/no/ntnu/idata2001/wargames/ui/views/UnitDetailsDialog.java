@@ -49,6 +49,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
     /**
      * The GUI-components holding the Unit information.
      */
+    private TextField unittypeText;
     private TextField title;
     private TextField healthNumber;
     private ChoiceBox<String> unitType;
@@ -116,6 +117,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
         this.numberOfUnits.setPromptText("Number of Units");
         this.attackBonus = new Label();
         this.resistBonus = new Label();
+        this.unittypeText = new TextField();
 
         // Prevent characters (non-integers) to be added. By adding an event listener
         // to the TextField for the issue number, this event is fired for each keypress
@@ -147,6 +149,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
                 this.healthNumber.setText(oldValue);
             }
         });
+
         this.numberOfUnits.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 if (newValue.length() > 0) {
@@ -163,6 +166,12 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
             }
         });
 
+// Use the GridPane to create the section of the dialog displaying the details
+        // about the Unit
+        grid.add(new Label("Name:"), 0, 0);
+        grid.add(title, 1, 0);
+        grid.add(new Label("Health:"), 0, 1);
+        grid.add(healthNumber, 1, 1);
 
         // Fill inn data from the provided Unit, if not null.
         if ((mode == Mode.EDIT) || (mode == Mode.INFO)) {
@@ -180,24 +189,24 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
             if (mode == Mode.INFO) {
                 title.setEditable(false);
                 healthNumber.setEditable(false);
+                unittypeText.setText(existingArmyUnit.getClass().getSimpleName());
+                unittypeText.setEditable(false);
                 grid.add(new Label("Attack-bonus:"), 3, 0);
                 grid.add(attackBonus, 4, 0);
                 grid.add(new Label("Resist-bonus:"), 3, 1);
                 grid.add(resistBonus, 4, 1);
+                grid.add(new Label("Unit Type:"), 0, 2);
+                grid.add(unittypeText, 1, 2);
             }
         }
+        if(mode == Mode.NEW){
+            grid.add(new Label("Unit Type:"), 0, 2);
+            this.unitType.getItems().addAll("CavalryUnit", "CommanderUnit", "InfantryUnit", "RangedUnit");
+            grid.add(unitType, 1, 2);
+            grid.add(new Label("Number of Units:"), 0, 3);
+            grid.add(numberOfUnits, 1, 3);
+        }
 
-        // Use the GridPane to create the section of the dialog displaying the details
-        // about the Unit
-        grid.add(new Label("Name:"), 0, 0);
-        grid.add(title, 1, 0);
-        grid.add(new Label("Health:"), 0, 1);
-        grid.add(healthNumber, 1, 1);
-        grid.add(new Label("Unit Type:"), 0, 2);
-        this.unitType.getItems().addAll("CavalryUnit", "CommanderUnit", "InfantryUnit", "RangedUnit");
-        grid.add(unitType, 1, 2);
-        grid.add(new Label("Number of Units:"), 0, 3);
-        grid.add(numberOfUnits, 1, 3);
 
         getDialogPane().setContent(grid);
     }
@@ -256,7 +265,7 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
                             Alert alert = new Alert(Alert.AlertType.WARNING);
                             alert.setTitle("Empty Fields Error");
                             alert.setHeaderText("Some fields are empty");
-                            alert.setContentText("Please Fill the Name, Health, Unit type and amount of units, fields");
+                            alert.setContentText("Please Fill the Name, Health, Unit type and amount-of-units, fields");
                             alert.showAndWait();
                         }
                     }

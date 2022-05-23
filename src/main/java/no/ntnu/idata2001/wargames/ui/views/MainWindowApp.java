@@ -40,11 +40,7 @@ public class MainWindowApp extends Application {
     primaryStage.show();
     primaryStage.setOnCloseRequest(event -> {
       MainWindowAppController mainWindowAppController = fxmlLoader.getController();
-      try {
-        mainWindowAppController.exit();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      mainWindowAppController.exit();
     });
   }
 }

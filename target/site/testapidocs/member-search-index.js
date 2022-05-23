@@ -1,0 +1,1 @@
+memberSearchIndex = [{"p":"no.ntnu.idata2001.wargames.model","c":"DummyUnit","l":"getAttackBonus(boolean)"},{"p":"no.ntnu.idata2001.wargames.model","c":"DummyUnit","l":"getResistBonus()"}];updateSearchResults();
