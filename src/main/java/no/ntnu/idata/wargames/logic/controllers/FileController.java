@@ -1,26 +1,17 @@
 package no.ntnu.idata.wargames.logic.controllers;
 
-import no.ntnu.idata.wargames.logic.warsimulation.Army;
 import no.ntnu.idata.wargames.logic.warsimulation.Battle;
 
 import java.io.*;
-import java.util.ArrayList;
 
 /**
- * saves and retrieves a Tournament from a file.
+ * saves and retrieves a Tournament from a file using object-stream.
+ * Object put in will exact same as put inn - even random-generators.
  *
- * @author johan
- * @version $Id: $Id
+ * @author Johannes Kolvik Valøy
+ * @version 1.0
  */
 public class FileController {
-
-    /**
-     * Saves Tournament to file using stream
-     *
-     * @throws java.io.IOException if any.
-     */
-    public FileController() throws IOException {
-    }
 
     /**
      * <p>saveBattle.</p>
@@ -36,18 +27,6 @@ public class FileController {
         }
     }
 
-    /**
-     * <p>newBattle.</p>
-     *
-     * @return a {@link Battle} object
-     * @throws java.io.IOException if any.
-     */
-    public Battle newBattle() throws IOException {
-        Battle battle = new Battle(new Army("ArmyOne", new ArrayList<>()), new Army("ArmyTwo", new ArrayList<>()));
-        saveBattle(battle);
-        return battle;
-
-    }
     /**
      * <p>retrieveBattle.</p>
      *

@@ -23,8 +23,8 @@
             <MenuBar>
                 <Menu mnemonicParsing="false" text="File">
                     <MenuItem mnemonicParsing="false" onAction="#resetSession" text="Reset" />
-                    <MenuItem mnemonicParsing="false" onAction="#openArmyOne" text="Import Army One" />
-                    <MenuItem mnemonicParsing="false" onAction="#openArmyTwo" text="Import Army Two" />
+                    <MenuItem mnemonicParsing="false" onAction="#importArmyOne" text="Import Army One" />
+                    <MenuItem mnemonicParsing="false" onAction="#importArmyTwo" text="Import Army Two" />
                     <MenuItem mnemonicParsing="false" onAction="#export" text="Export" />
                     <MenuItem mnemonicParsing="false" onAction="#save" text="Save" />
                 </Menu>
@@ -148,11 +148,11 @@
                <Label text="Commander Unit" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                <Label text="Infantry Unit" GridPane.columnIndex="2" GridPane.rowIndex="3" />
                <Label text="Ranged Unit" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-               <TextField fx:id="cavlryunitArmyOne" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               <TextField fx:id="cavalryUnitArmyOne" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                <TextField fx:id="commanderUnitArmyOne" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                <TextField fx:id="infantryUnitArmyOne" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                <TextField fx:id="rangedUnitArmyOne" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-               <TextField fx:id="cavlryunitArmyTwo" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+               <TextField fx:id="cavalryUnitArmyTwo" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                <TextField fx:id="commanderUnitArmyTwo" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                <TextField fx:id="infantryUnitArmyTwo" GridPane.columnIndex="3" GridPane.rowIndex="3" />
                <TextField fx:id="rangedUnitArmyTwo" GridPane.columnIndex="3" GridPane.rowIndex="4" />

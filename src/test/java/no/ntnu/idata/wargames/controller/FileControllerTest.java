@@ -10,6 +10,7 @@ import java.io.IOException;
 class FileControllerTest {
 
     /**
+     * Positive and negative test for FileController.
      * <p>saveBattle.</p>
      *
      * @throws java.io.IOException if any.
@@ -23,6 +24,7 @@ class FileControllerTest {
         fileController.saveBattle(battle);
 
         assertEquals(battle.getClass(), fileController.retrieveBattle().getClass());
+        //negative test.
         boolean wrongClassAccepted = true;
         try {
             fileController.saveBattle(army);

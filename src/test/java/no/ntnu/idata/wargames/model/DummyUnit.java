@@ -1,7 +1,7 @@
 package no.ntnu.idata.wargames.model;
 
 /**
- * todo comment here
+ * DummyUnit representing a real unit based on Unit-superclass, made for testing the Unit-class.
  *
  * @author johan
  * @version $Id: $Id

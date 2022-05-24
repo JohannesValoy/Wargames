@@ -23,7 +23,8 @@ public class CSVController {
     }
 
     /**
-     * Saves army in .csv file using army object and number 0 or 1 for armyOne and armyTwo in a battle. throws IOException if printing does not work.
+     * Saves army in .csv file using army object and number 0 or 1 for armyOne and armyTwo in a battle.
+     * Throws IOException if printing does not work.
      *
      * @param army as Army.
      * @param armyNumber as int. 0 or 1, the two competing armies.
@@ -85,10 +86,9 @@ public class CSVController {
                             } catch (IllegalArgumentException e){
                                 throw new IOException(e.getMessage());
                             }
-
                             i++;
                         }
-                        //
+                        //Checks if i is more than 999 and throws IOExcpetion.
                         if(i > 999){
                             throw new IOException("File has More than 999 units");
                         }

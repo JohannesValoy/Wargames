@@ -65,6 +65,7 @@ public class Battle implements Serializable{
 
         }
 
+        //Sets the winner when one army is out of units.
         if (armyOne.hasUnits()){
             winner = armyOne;
         } else {
@@ -94,7 +95,7 @@ public class Battle implements Serializable{
     /**
      * returns ArmyOne as Army.
      *
-     * @return ArmyOne as Army
+     * @return ArmyOne as Army.
      */
     public Army getArmyOne() {
         return armyOne;
@@ -103,24 +104,14 @@ public class Battle implements Serializable{
     /**
      * returns ArmyTwo as Army.
      *
-     * @return ArmyTwo as Army
+     * @return ArmyTwo as Army.
      */
     public Army getArmyTwo() {
         return armyTwo;
     }
 
     /**
-     * <p>getAllUnits.</p>
-     *
-     * @return a {@link java.util.List} object
-     */
-    public List<Unit> getAllUnits(){
-        List<Unit> units = new ArrayList<>(getArmyOne().getAllUnits());
-        units.addAll(getArmyTwo().getAllUnits());
-        return units;
-    }
-
-    /**
+     * Returns RangedUnits.
      * <p>getRangeUnits.</p>
      *
      * @return a {@link java.util.List} object
@@ -132,6 +123,7 @@ public class Battle implements Serializable{
     }
 
     /**
+     * Returns list of InfantryUnits.
      * <p>getInfantryUnits.</p>
      *
      * @return a {@link java.util.List} object
@@ -143,6 +135,7 @@ public class Battle implements Serializable{
     }
 
     /**
+     * Returns list of CavalryUnits.
      * <p>getCavalryUnits.</p>
      *
      * @return a {@link java.util.List} object

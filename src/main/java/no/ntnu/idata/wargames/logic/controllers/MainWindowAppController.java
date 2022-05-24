@@ -1,8 +1,3 @@
-//TODO: simulate when army/armies are empty leads to error behind the scenes.
-//TODO: Choosing the type of unit made?
-//TODO: export to file.
-//TODO: Handle exeption in unitfactory when importing file
-
 package no.ntnu.idata.wargames.logic.controllers;
 
 import javafx.application.Platform;
@@ -22,7 +17,6 @@ import no.ntnu.idata.wargames.model.CavalryUnit;
 import no.ntnu.idata.wargames.model.InfantryUnit;
 import no.ntnu.idata.wargames.model.RangedUnit;
 import no.ntnu.idata.wargames.model.Unit;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -37,22 +31,16 @@ import java.util.*;
  * the {@code initialize()}-method, replacing the constructor.
  * The {@code initialize()}-method is being called by the JavaFX runtime
  * upon initialization of the GUI, after the GUI-components in the
- * Scenegraph has been created.</p>
+ * Scenegraph has been created.</p>.
+ * This controller is responsible for keeping all the other objects directly or indirectly.
+ * It is also responsible for processing the terrain-choice and all the exceptions except in the unitsDetailsDialog.
  *
- * @author johan
- * @version $Id: $Id
+ * @author Johannes Kolvik Valøy
+ * @version 1.0
  */
 public class MainWindowAppController implements Initializable {
 
 
-  public TextField cavlryunitArmyOne;
-  public TextField commanderUnitArmyOne;
-  public TextField infantryUnitArmyOne;
-  public TextField rangedUnitArmyOne;
-  public TextField cavlryunitArmyTwo;
-  public TextField rangedUnitArmyTwo;
-  public TextField commanderUnitArmyTwo;
-  public TextField infantryUnitArmyTwo;
 
   private Battle battle;
   private ObservableList<Unit> observableArmyOne;
@@ -61,6 +49,22 @@ public class MainWindowAppController implements Initializable {
   private String pathArmyOne;
   private String pathArmyTwo;
 
+  @FXML
+  private TextField cavalryUnitArmyOne;
+  @FXML
+  private TextField commanderUnitArmyOne;
+  @FXML
+  private TextField infantryUnitArmyOne;
+  @FXML
+  private TextField rangedUnitArmyOne;
+  @FXML
+  private TextField cavalryUnitArmyTwo;
+  @FXML
+  private TextField rangedUnitArmyTwo;
+  @FXML
+  private TextField commanderUnitArmyTwo;
+  @FXML
+  private TextField infantryUnitArmyTwo;
   @FXML
   private Label numberOfUnitsArmyTwoLabel;
   @FXML
@@ -88,8 +92,6 @@ public class MainWindowAppController implements Initializable {
   @FXML
   private TextField winner;
 
-  Army armyOne;
-  Army armyTwo;
 
 
   /**
@@ -112,9 +114,6 @@ public class MainWindowAppController implements Initializable {
       showCustomDialog("Internal Error", "Internal Error - Memory-" + e.getMessage(), "Both armies will be reset");
       this.battle = new Battle(new Army("ArmyOne"), new Army("ArmyTwo"));
     }
-
-    armyOne = battle.getArmyOne();
-    armyTwo = battle.getArmyTwo();
 
     //TableView
     // Finalize the setup of the TableView for armyOne and armyTwo.
@@ -169,8 +168,8 @@ public class MainWindowAppController implements Initializable {
     if(army.getAllUnits().size() < 999){
 
       //Initializes the dialog to add Units.
-      UnitDetailsDialog npDialog = new UnitDetailsDialog();
-      Optional<List<Unit>> result = npDialog.showAndWait();
+      UnitDetailsDialog unitDialog = new UnitDetailsDialog();
+      Optional<List<Unit>> result = unitDialog.showAndWait();
       if (result.isPresent()) {
         List<Unit> newArmyUnit = result.get();
         //Checks if the sum of units in army and units added is less than 1000,
@@ -187,14 +186,20 @@ public class MainWindowAppController implements Initializable {
     } else {showTooManyUnitsDialog();}
   }
 
+  /**
+   * Adds unit to armyOne
+   */
   @FXML
   public void addArmyUnitArmyOne() {
-    addArmyUnit(armyOne);
+    addArmyUnit(this.battle.getArmyOne());
   }
 
+  /**
+   * Adds unit to armyTwo
+   */
   @FXML
   public void addArmyUnitArmyTwo() {
-    addArmyUnit(armyTwo);
+    addArmyUnit(this.battle.getArmyTwo());
   }
 
   /**
@@ -218,11 +223,11 @@ public class MainWindowAppController implements Initializable {
       boolean delete = showDeleteConfirmationDialog();
       // armyOne
       if (delete && selectedArmyOne != null) {
-        this.armyOne.remove(selectedArmyOne);
+        this.battle.getArmyOne().remove(selectedArmyOne);
       }
       // armyTwo
       if(delete && selectedArmyTwo != null){
-        this.armyTwo.remove(selectedArmyTwo);}
+        this.battle.getArmyTwo().remove(selectedArmyTwo);}
       }
     this.updateObservables();
     }
@@ -314,7 +319,7 @@ public class MainWindowAppController implements Initializable {
    * If the set terrain is not 'Hills', 'Plains', 'Forest' or null, there will ve thrown an IllegalArgumentException to the terminal.
    */
   public void terrainController() {
-    Army army = armyOne;
+    Army army = this.battle.getArmyOne();
     int i = 0;
 
     while(i < 2) {
@@ -341,7 +346,7 @@ public class MainWindowAppController implements Initializable {
 
       //Updates tables
       this.updateObservables();
-      army = armyTwo;
+      army = this.battle.getArmyTwo();
     }
   }
 
@@ -392,10 +397,7 @@ public class MainWindowAppController implements Initializable {
     fileController.saveBattle(battle);
   }
   /**
-   * TODO: make filecontroller in the initialize or the contstructor. this.filecontroller.
    * Exit the application. Displays a confirmation dialog.
-   *
-   * @throws java.io.IOException if any.
    */
   @FXML
   public void exit(){
@@ -430,17 +432,17 @@ public class MainWindowAppController implements Initializable {
     if (selectedFolder == null) {
       showCustomDialog("No Folder Chosen", "There is no folder chosen to export to.", "Please choose a folder, hit 'open', and click 'OK'.");
     } else {
-      CSVController CSVController = new CSVController();
+      CSVController csvController = new CSVController();
 
       try {
-        CSVController.saveArmy(battle.getArmyOne(), 0, selectedFolder.getAbsolutePath() + "\\" + battle.getArmyOne().getName() + ".csv");
+        csvController.saveArmy(battle.getArmyOne(), 0, selectedFolder.getAbsolutePath() + "\\" + battle.getArmyOne().getName() + ".csv");
 
         //Checks if the name of the armies are the same, if they are it changes the name of armyTwo by adding "armyTwo to the name, this way it will not overwrite the armyOne-file.
         if(battle.getArmyOne().getName().equals(battle.getArmyTwo().getName())){
           battle.getArmyTwo().setName(battle.getArmyTwo().getName() + "armyTwo");
         }
 
-        CSVController.saveArmy(battle.getArmyTwo(), 0, selectedFolder.getAbsolutePath() + "\\" + battle.getArmyTwo().getName() + ".csv");
+        csvController.saveArmy(battle.getArmyTwo(), 0, selectedFolder.getAbsolutePath() + "\\" + battle.getArmyTwo().getName() + ".csv");
 
       } catch (IOException e){
         showCustomDialog("File export Error", e.getMessage(), "Please select a different folder without other files with the same name as the armies and try again.");
@@ -448,11 +450,19 @@ public class MainWindowAppController implements Initializable {
     }
   }
 
-  public void openArmyOne() {
+  /**
+   * Used to import file to ArmyOne using the windows file-browser to choose the file.
+   */
+  @FXML
+  public void importArmyOne() {
     open(true);
   }
 
-  public void openArmyTwo() {
+  /**
+   * Used to import file to ArmyTwo using the windows file-browser to choose the file.
+   */
+  @FXML
+  public void importArmyTwo() {
     open(false);
   }
   /**
@@ -507,21 +517,23 @@ public class MainWindowAppController implements Initializable {
    */
   private void updateObservables() {
     this.observableArmyOne.setAll(this.battle.getArmyOne().getAllUnits());
-    //armyControllerOne.updateTableView(this.observableArmyOne);
+
       numberOfUnitsArmyOneLabel.setText(battle.getArmyOne().getAllUnits().size() + "");
       armyOneNameLabel.setText(battle.getArmyOne().getName());
     fileNameLabelArmyOne.setText(new File(pathArmyOne).getName());
-    cavlryunitArmyOne.setText(battle.getArmyOne().getCavalryUnits().size() - battle.getArmyOne().getCommanderUnits().size() + "");
+
+    cavalryUnitArmyOne.setText(battle.getArmyOne().getCavalryUnits().size() - battle.getArmyOne().getCommanderUnits().size() + "");
     commanderUnitArmyOne.setText(battle.getArmyOne().getCommanderUnits().size() + "");
     infantryUnitArmyOne.setText(battle.getArmyOne().getInfantryUnits().size() + "");
     rangedUnitArmyOne.setText(battle.getArmyOne().getRangedUnits().size() + "");
-
+//split in two for armyOne and amryTwo.
     this.observableArmyTwo.setAll(this.battle.getArmyTwo().getAllUnits());
-    //armyControllerTwo.updateTableView(this.observableArmyTwo);
+
       numberOfUnitsArmyTwoLabel.setText(battle.getArmyTwo().getAllUnits().size() + "");
       armyTwoNameLabel.setText(battle.getArmyTwo().getName());
     fileNameLabelArmyTwo.setText(new File(pathArmyTwo).getName());
-    cavlryunitArmyTwo.setText(battle.getArmyTwo().getCavalryUnits().size() - battle.getArmyTwo().getCommanderUnits().size() + "");
+
+    cavalryUnitArmyTwo.setText(battle.getArmyTwo().getCavalryUnits().size() - battle.getArmyTwo().getCommanderUnits().size() + "");
     commanderUnitArmyTwo.setText(battle.getArmyTwo().getCommanderUnits().size() + "");
     infantryUnitArmyTwo.setText(battle.getArmyTwo().getInfantryUnits().size() + "");
     rangedUnitArmyTwo.setText(battle.getArmyTwo().getRangedUnits().size() + "");

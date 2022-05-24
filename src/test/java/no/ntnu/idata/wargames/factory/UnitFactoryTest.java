@@ -10,7 +10,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UnitFactoryTest {
+class UnitFactoryTest {
+
+    /**
+     * Positive test for importUnits
+     */
 
     @Test
     void importUnits() {
@@ -26,6 +30,10 @@ public class UnitFactoryTest {
         assertEquals(unitFactory.retrieveAllunits(), units);
     }
 
+    /**
+     * Positive tst for addUnit.
+     * @throws IOException for UnitFactory.
+     */
     @Test
     void addUnit() throws IOException {
         UnitFactory unitFactory = new UnitFactory();
@@ -36,6 +44,10 @@ public class UnitFactoryTest {
         assertEquals(4, unitFactory.retrieveAllunits().size());
     }
 
+    /**
+     * Positive test for retrieveSpecificUnits.
+     * @throws IOException
+     */
     @Test
     void retrieveSpesificUnits() throws IOException {
         UnitFactory unitFactory = new UnitFactory();

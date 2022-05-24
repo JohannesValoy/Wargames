@@ -10,12 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class CSVControllerTest {
 
     /**
+     * Positive test for CSVController
      * <p>makeFile.</p>
      *
      * @throws java.lang.Exception if any.
      */
     @Test
-    public void makeFile() throws Exception {
+    void makeFile() throws Exception {
         CSVController savingArmy = new CSVController();
         Army armyOne = new Army("Army1");
         Army armyTwo = new Army("Army2");

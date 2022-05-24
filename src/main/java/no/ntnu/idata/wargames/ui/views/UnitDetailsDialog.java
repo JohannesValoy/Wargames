@@ -217,7 +217,6 @@ public class UnitDetailsDialog extends Dialog<List<Unit>> {
      * opened in (EDIT, NEW, INFO).
      */
     private void defineReturnInstance() {
-        //TODO: Check for exepetions when fields are empty and unittype not chosen.
 
         // Convert the result to Unit-instance when the OK button is clicked.
         // In this example I use lambda. Could also have been solved using anonymous inner class

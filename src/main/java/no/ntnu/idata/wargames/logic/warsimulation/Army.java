@@ -190,9 +190,10 @@ public class Army implements Serializable {
     }
 
     /**
+     * To be used when printed out to file.
      * <p>toString.</p>
      *
-     * @return a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         String armyName = getName();
@@ -204,6 +205,7 @@ public class Army implements Serializable {
     }
 
     /**
+     * Makes new random, to be used to get new random when file is restored from stream, intact with old seed.
      * <p>newRandom.</p>
      */
     public void newRandom(){

@@ -58,8 +58,6 @@ public abstract class Unit implements Serializable{
         if(currentHealth < opponent.health){
         opponent.setHealth(currentHealth);}
     }
-
-    //TODO: check if supposed to have this function (related to the terrain function)
     /**
      * <p>Setter for the field <code>name</code>.</p>
      *
@@ -141,7 +139,6 @@ public abstract class Unit implements Serializable{
      */
     public abstract int getResistBonus();
 
-    //TODO: check if supposed to have this function (related to the terrain function)
     /**
      * <p>addAttackBonus.</p>
      *
@@ -154,12 +151,10 @@ public abstract class Unit implements Serializable{
             throw new IllegalArgumentException("Attack-bonus must be 0 or more");
         }
     }
-
-    //TODO: check if supposed to have this function (related to the terrain function)
     /**
      * <p>addResistBonus.</p>
      *
-     * @param resistBonus a int
+     * @param resistBonus as int
      */
     public void addResistBonus(int resistBonus){
         if(attackBonus >= 0){
@@ -168,6 +163,4 @@ public abstract class Unit implements Serializable{
             throw new IllegalArgumentException("Resist-bonus must be 0 or more");
         }
     }
-
-
 }

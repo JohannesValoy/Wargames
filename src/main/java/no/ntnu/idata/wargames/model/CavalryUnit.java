@@ -53,6 +53,7 @@ public class CavalryUnit extends Unit {
     /**
      * {@inheritDoc}
      *
+     * Returns resistBonus
      * Value is Always 1.
      */
 
