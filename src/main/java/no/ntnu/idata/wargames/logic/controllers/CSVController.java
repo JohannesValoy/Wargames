@@ -80,7 +80,7 @@ public class CSVController {
                         if (text[0].isEmpty() || text[1].isEmpty() || text[2] == null) {
                             throw new IOException("File is Corrupted");
                         } else {
-                            try{ unitFactory.addUnit(health + 1, name, unitType, 1);
+                            try{ unitFactory.addUnit(health, name, unitType, 1);
                             } catch (IllegalArgumentException e){
                                 throw new IOException(e.getMessage());
                             }

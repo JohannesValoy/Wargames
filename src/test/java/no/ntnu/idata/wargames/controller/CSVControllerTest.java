@@ -24,11 +24,12 @@ class CSVControllerTest {
         armyOne.add(unit);
         armyTwo.add(unit2);
 
+        savingArmy.saveArmy(armyOne,0, "ArmyOne");
+        savingArmy.saveArmy(armyTwo,1, "ArmyTwo");
+
         Army retrievedArmyOne = savingArmy.retrieveArmy("ArmyOne");
         Army retrievedArmyTwo = savingArmy.retrieveArmy("ArmyTwo");
 
-        savingArmy.saveArmy(armyOne,0, "ArmyOne");
-        savingArmy.saveArmy(armyTwo,1, "ArmyTwo");
 
         assertEquals(armyOne.getRandom().getAttack(), retrievedArmyOne.getRandom().getAttack());
         assertEquals(armyOne.getRandom().getHealth(), retrievedArmyOne.getRandom().getHealth());

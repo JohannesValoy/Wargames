@@ -1,4 +1,4 @@
-module no.ntnu.idata2001.wargames {
+module no.ntnu.idata.wargames {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.logging;
@@ -14,8 +14,6 @@ module no.ntnu.idata2001.wargames {
     exports no.ntnu.idata.wargames.logic.warsimulation;
     exports no.ntnu.idata.wargames;
     exports no.ntnu.idata.wargames.ui.views;
-    exports no.ntnu.idata.wargames.ui.controllers;
-    opens no.ntnu.idata.wargames.ui.controllers;
     exports no.ntnu.idata.wargames.logic.factory;
     opens no.ntnu.idata.wargames.logic.factory;
     exports no.ntnu.idata.wargames.logic.controllers;
