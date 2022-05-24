@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * <p>UnitFactory class.</p>
  *
- * @author Johannes
+ * @author Johannes Kolvik Valøy
  * @version 1.0
  */
 public class UnitFactory {
